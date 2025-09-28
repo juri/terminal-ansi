@@ -145,18 +145,26 @@ public enum SetGraphicsRendition {
 }
 
 public enum OperatingSystemCommand {
+    case link(id: String?, target: String, title: String)
     case setProgress(OSCProgress)
 
     public var rawValue: String {
-        let prefix = "]9;"
         let suffix = Codes.st
         let action: String
 
         switch self {
-        case let .setProgress(oscp): action = oscp.rawValue
+        case let .link(id: id, target: target, title: title):
+            var codes = "8;"
+            if let id {
+                codes += "id=\(id)"
+            }
+            codes += ";\(target)\(Codes.st)\(title)\(Codes.esc)]8;;"
+            action = codes
+
+        case let .setProgress(oscp): action = "9;" + oscp.rawValue
         }
 
-        return "\(prefix)\(action)\(suffix)"
+        return "]\(action)\(suffix)"
     }
 }
 
