@@ -18,6 +18,7 @@ public enum ANSIControlCode {
     case moveCursorToColumn(n: Int)
     case moveCursorUp(n: Int)
     case operatingSystemCommand(OperatingSystemCommand)
+    case reset
     case restoreCursorPosition
     case restoreScreen
     case saveCursorPosition
@@ -55,6 +56,7 @@ public enum ANSIControlCode {
 
         case let .operatingSystemCommand(osc): return ANSICommand(rawValue: osc.rawValue)
 
+        case .reset: return ANSICommand(rawValue: "c")
         case .restoreCursorPosition: return ANSICommand(rawValue: "8")
         case .restoreScreen: return ANSICommand(rawValue: "[?47l")
         case .saveCursorPosition: return ANSICommand(rawValue: "7")
