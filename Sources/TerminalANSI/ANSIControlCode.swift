@@ -169,14 +169,13 @@ public enum OSCProgress {
 
     public var rawValue: String {
         let prefix = "4;"
-        let suffix = "\u{0007}"
 
         switch self {
-        case .remove: return "\(prefix)0;0\(suffix)"
-        case let .value(value): return "\(prefix)1;\(min(100, max(0, value)))\(suffix)"
-        case .error: return "\(prefix)2;0\(suffix)"
-        case .indeterminate: return "\(prefix)3;0\(suffix)"
-        case .paused: return "\(prefix)4;0\(suffix)"
+        case .remove: return "\(prefix)0;0"
+        case let .value(value): return "\(prefix)1;\(min(100, max(0, value)))"
+        case .error: return "\(prefix)2;0"
+        case .indeterminate: return "\(prefix)3;0"
+        case .paused: return "\(prefix)4;0"
         }
     }
 }
