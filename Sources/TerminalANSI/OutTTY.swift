@@ -6,10 +6,12 @@
 
 import Foundation
 
+/// `OutTTY` wraps output to a TTY.
 @MainActor
 public final class OutTTY {
     private let fileHandle: FileHandle
 
+    /// Opens TTY and if it succeeds and the device is a TTY, returns a non-nil instance.
     public convenience init?() {
         guard let outTTYHandle = FileHandle(forWritingAtPath: "/dev/tty") else {
             return nil

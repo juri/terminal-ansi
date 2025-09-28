@@ -4,6 +4,7 @@
 //  Created by Juri Pakaste on 27.9.2025.
 //
 
+/// `ANSIControlCode` defines ANSI escape sequences for controlling Unix style terminals.
 public enum ANSIControlCode {
     case clearLine
     /// See also ``erase(_:)``. This is the same as ``Erase/entireScreen``.
@@ -81,6 +82,7 @@ public enum ANSIControlCode {
     }
 }
 
+/// `ANSICommand` is an ANSI escape sequence ready for outputting to the terminal.
 public struct ANSICommand {
     public var rawValue: String
     public var escape: Bool = true
@@ -90,6 +92,7 @@ public struct ANSICommand {
     }
 }
 
+/// `Erase` defines the various erase control codes.
 public enum Erase {
     case endOfScreen
     case beginningOfScreen
@@ -112,6 +115,7 @@ public enum Erase {
     }
 }
 
+/// `SetGraphicsRendition` defines the SGR control codes.
 public enum SetGraphicsRendition {
     case background256(Int)
     case backgroundBasic(BasicPalette)
@@ -144,6 +148,7 @@ public enum SetGraphicsRendition {
     }
 }
 
+/// `OperatingSystemCommand` defines the OSC control codes.
 public enum OperatingSystemCommand {
     case link(id: String?, target: String, title: String)
     case setProgress(OSCProgress)
@@ -168,6 +173,7 @@ public enum OperatingSystemCommand {
     }
 }
 
+/// `OSCProgress` is a OSC progress indicator.
 public enum OSCProgress {
     case remove
     case value(Int)
