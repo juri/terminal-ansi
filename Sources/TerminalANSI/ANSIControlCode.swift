@@ -9,6 +9,7 @@ public enum ANSIControlCode {
     case clearScreen
     case disableAlternativeBuffer
     case enableAlternativeBuffer
+    case insertBlanks(Int)
     case insertLines(Int)
     case literal(String)
     case moveCursor(x: Int, y: Int?)
@@ -34,6 +35,7 @@ public enum ANSIControlCode {
         case .clearScreen: return ANSICommand(rawValue: "[2J")
         case .disableAlternativeBuffer: return ANSICommand(rawValue: "[?1049l")
         case .enableAlternativeBuffer: return ANSICommand(rawValue: "[?1049h")
+        case let .insertBlanks(n): return ANSICommand(rawValue: "[\(n)@")
         case let .insertLines(n): return ANSICommand(rawValue: "[\(n)L")
         case let .literal(str): return ANSICommand(rawValue: str, escape: false)
 
