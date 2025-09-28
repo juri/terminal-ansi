@@ -86,7 +86,7 @@ public struct ANSICommand {
     public var escape: Bool = true
 
     public var message: String {
-        "\(self.escape ? "\u{001B}" : "")\(self.rawValue)"
+        "\(self.escape ? Codes.esc : "")\(self.rawValue)"
     }
 }
 
@@ -149,7 +149,7 @@ public enum OperatingSystemCommand {
 
     public var rawValue: String {
         let prefix = "]9;"
-        let suffix = "\u{0007}"
+        let suffix = Codes.bel
         let action: String
 
         switch self {
@@ -190,4 +190,9 @@ public enum BasicPalette: Int, Sendable {
     case magenta = 5
     case cyan = 6
     case white = 7
+}
+
+enum Codes {
+    static let esc: String = "\u{001B}"
+    static let bel: String = "\u{0007}"
 }
