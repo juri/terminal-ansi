@@ -6,9 +6,11 @@
 
 public enum ANSIControlCode {
     case clearLine
+    /// See also ``erase(_:)``. This is the same as ``Erase/entireScreen``.
     case clearScreen
     case disableAlternativeBuffer
     case enableAlternativeBuffer
+    case erase(Erase)
     case insertBlanks(Int)
     case insertLines(Int)
     case literal(String)
@@ -37,6 +39,7 @@ public enum ANSIControlCode {
         case .clearScreen: return ANSICommand(rawValue: "[2J")
         case .disableAlternativeBuffer: return ANSICommand(rawValue: "[?1049l")
         case .enableAlternativeBuffer: return ANSICommand(rawValue: "[?1049h")
+        case let .erase(erase): return ANSICommand(rawValue: erase.rawValue)
         case let .insertBlanks(n): return ANSICommand(rawValue: "[\(n)@")
         case let .insertLines(n): return ANSICommand(rawValue: "[\(n)L")
         case let .literal(str): return ANSICommand(rawValue: str, escape: false)
@@ -84,6 +87,28 @@ public struct ANSICommand {
 
     public var message: String {
         "\(self.escape ? "\u{001B}" : "")\(self.rawValue)"
+    }
+}
+
+public enum Erase {
+    case endOfScreen
+    case beginningOfScreen
+    case entireScreen
+    case savedLines
+    case endOfLine
+    case startOfLine
+    case entireLine
+
+    public var rawValue: String {
+        switch self {
+        case .endOfScreen: "[0J"
+        case .beginningOfScreen: "[1J"
+        case .entireScreen: "[2J"
+        case .savedLines: "[3J"
+        case .endOfLine: "[0K"
+        case .startOfLine: "[1K"
+        case .entireLine: "[2K"
+        }
     }
 }
 
