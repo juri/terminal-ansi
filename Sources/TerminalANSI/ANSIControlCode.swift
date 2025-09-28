@@ -13,6 +13,8 @@ public enum ANSIControlCode {
     case insertLines(Int)
     case literal(String)
     case moveCursor(x: Int, y: Int?)
+    case moveCursorBeginningOfLineDown(n: Int)
+    case moveCursorBeginningOfLineUp(n: Int)
     case moveCursorDown(n: Int)
     case moveCursorLeft(n: Int)
     case moveCursorRight(n: Int)
@@ -45,6 +47,10 @@ public enum ANSIControlCode {
             } else {
                 return ANSICommand(rawValue: "[\(x + 1)H")
             }
+        case let .moveCursorBeginningOfLineDown(n: n):
+            return n >= 0 ? ANSICommand(rawValue: "[\(n)E") : ANSICommand(rawValue: "[\(abs(n))F")
+        case let .moveCursorBeginningOfLineUp(n: n):
+            return n >= 0 ? ANSICommand(rawValue: "[\(n)F") : ANSICommand(rawValue: "[\(abs(n))E")
         case let .moveCursorLeft(n: n):
             return n >= 0 ? ANSICommand(rawValue: "[\(n)D") : ANSICommand(rawValue: "[\(abs(n))C")
         case let .moveCursorDown(n: n):
