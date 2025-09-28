@@ -149,7 +149,7 @@ public enum OperatingSystemCommand {
 
     public var rawValue: String {
         let prefix = "]9;"
-        let suffix = Codes.bel
+        let suffix = Codes.st
         let action: String
 
         switch self {
@@ -195,4 +195,5 @@ public enum BasicPalette: Int, Sendable {
 enum Codes {
     static let esc: String = "\u{001B}"
     static let bel: String = "\u{0007}"
+    static let st: String = "\(Codes.esc)\\"
 }
