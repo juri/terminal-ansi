@@ -13,7 +13,7 @@ public final class OutTTY {
 
     /// Opens TTY and if it succeeds and the device is a TTY, returns a non-nil instance.
     public convenience init?() {
-        guard let outTTYHandle = FileHandle(forWritingAtPath: "/dev/tty") else {
+        guard let outTTYHandle = FileHandle(forUpdatingAtPath: "/dev/tty") else {
             return nil
         }
         self.init(fileHandle: outTTYHandle)
@@ -39,5 +39,13 @@ public final class OutTTY {
 
     public func writeCodes(_ codes: [ANSIControlCode]) {
         self.write(codes.map(\.ansiCommand.message))
+    }
+
+    public func foregroundColor() throws -> RGBColor {
+        try TerminalANSI.foregroundColor(fileHandle: self.fileHandle)
+    }
+
+    public func backgroundColor() throws -> RGBColor {
+        try TerminalANSI.backgroundColor(fileHandle: self.fileHandle)
     }
 }
