@@ -207,7 +207,9 @@ public enum BasicPalette: Int, Sendable {
 }
 
 enum Codes {
-    static let esc: String = "\u{001B}"
     static let bel: String = "\u{0007}"
+    static let csi: String = "\(esc)["
+    static let esc: String = "\u{001B}"
+    static let osc: String = "\(esc)]"
     static let st: String = "\(Codes.esc)\\"
 }
