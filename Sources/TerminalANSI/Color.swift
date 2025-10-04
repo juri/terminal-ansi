@@ -6,27 +6,27 @@
 
 /// RGBAColor16 is 16 bits per channel, range 0…65 025/FFFF.
 public struct RGBAColor16 {
-    public var r: RGBComponent16 = RGBComponent16(rawValue: 0)
-    public var g: RGBComponent16 = RGBComponent16(rawValue: 0)
-    public var b: RGBComponent16 = RGBComponent16(rawValue: 0)
-    public var a: RGBComponent16 = RGBComponent16(rawValue: 0)
-}
+    public struct Component: RawRepresentable, Hashable {
+        public var rawValue: Int
 
-public struct RGBComponent16: RawRepresentable, Hashable {
-    public var rawValue: Int
-
-    public init(rawValue: Int) {
-        self.rawValue = rawValue
+        public init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
     }
+
+    public var r: Component = Component(rawValue: 0)
+    public var g: Component = Component(rawValue: 0)
+    public var b: Component = Component(rawValue: 0)
+    public var a: Component = Component(rawValue: 0)
 }
 
-extension RGBComponent16: Comparable {
-    public static func < (lhs: RGBComponent16, rhs: RGBComponent16) -> Bool {
+extension RGBAColor16.Component: Comparable {
+    public static func < (lhs: Self, rhs: Self) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }
 }
 
-extension RGBComponent16 {
+extension RGBAColor16.Component {
     /// Initialize with a 4 bit number, i.e. one hex digit, 0…F.
     init(value4bit value: Int) {
         self.rawValue = value * value * value * value

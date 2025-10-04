@@ -57,20 +57,20 @@ func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBAColor16 {
         throw ColorReadFailure.invalidStatusForColorRead(s)
     }
     var color = RGBAColor16()
-    func parseComponent(_ component: Substring) throws(ColorReadFailure) -> RGBComponent16 {
+    func parseComponent(_ component: Substring) throws(ColorReadFailure) -> RGBAColor16.Component {
         guard let i = Int(component, radix: 16) else { throw ColorReadFailure.invalidStatusForColorRead(s) }
         switch component.count {
-        case 1: return RGBComponent16(value4bit: i)
-        case 2: return RGBComponent16(value8bit: i)
-        case 3: return RGBComponent16(value4bit: i)
-        case 4: return RGBComponent16(rawValue: i)
+        case 1: return RGBAColor16.Component(value4bit: i)
+        case 2: return RGBAColor16.Component(value8bit: i)
+        case 3: return RGBAColor16.Component(value4bit: i)
+        case 4: return RGBAColor16.Component(rawValue: i)
         default: throw ColorReadFailure.invalidStatusForColorRead(s)
         }
     }
     color.r = try parseComponent(components[0])
     color.g = try parseComponent(components[1])
     color.b = try parseComponent(components[2])
-    color.a = componentCount == 4 ? try parseComponent(components[3]) : RGBComponent16(rawValue: 0xffff)
+    color.a = componentCount == 4 ? try parseComponent(components[3]) : RGBAColor16.Component(rawValue: 0xffff)
 
     return color
 }
