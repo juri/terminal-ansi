@@ -11,13 +11,13 @@ enum QueryColor: Int {
     case background = 11
 }
 
-func foregroundColor(fileHandle: FileHandle) throws(ColorReadFailure) -> RGBAColor16 {
+func foregroundColor(fileHandle: FileHandle) throws(ColorReadFailure) -> RGBAColor<UInt16> {
     let report = try statusReport(fileHandle: fileHandle, queryColor: .foreground)
     let parsedColor = try parseTerminalColor(s: report)
     return parsedColor
 }
 
-func backgroundColor(fileHandle: FileHandle) throws(ColorReadFailure) -> RGBAColor16 {
+func backgroundColor(fileHandle: FileHandle) throws(ColorReadFailure) -> RGBAColor<UInt16> {
     let report = try statusReport(fileHandle: fileHandle, queryColor: .background)
     let parsedColor = try parseTerminalColor(s: report)
     return parsedColor
@@ -33,7 +33,7 @@ enum ColorReadFailure: Error {
     case terminalResponseReadFailure
 }
 
-func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBAColor16 {
+func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBAColor<UInt16> {
     var subs = s[...]
 
     if subs.hasSuffix(Codes.bel) {
@@ -56,21 +56,21 @@ func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBAColor16 {
     if !(3...4).contains(componentCount) {
         throw ColorReadFailure.invalidStatusForColorRead(s)
     }
-    var color = RGBAColor16()
-    func parseComponent(_ component: Substring) throws(ColorReadFailure) -> RGBAColor16.Component {
-        guard let i = Int(component, radix: 16) else { throw ColorReadFailure.invalidStatusForColorRead(s) }
+    var color = RGBAColor<UInt16>()
+    func parseComponent(_ component: Substring) throws(ColorReadFailure) -> RGBAColor<UInt16>.Component {
+        guard let i = UInt16(component, radix: 16) else { throw ColorReadFailure.invalidStatusForColorRead(s) }
         switch component.count {
-        case 1: return RGBAColor16.Component(value4bit: i)
-        case 2: return RGBAColor16.Component(value8bit: i)
-        case 3: return RGBAColor16.Component(value4bit: i)
-        case 4: return RGBAColor16.Component(rawValue: i)
+        case 1: return RGBAColor<UInt16>.Component(value4bit: i)
+        case 2: return RGBAColor<UInt16>.Component(value8bit: i)
+        case 3: return RGBAColor<UInt16>.Component(value4bit: i)
+        case 4: return RGBAColor<UInt16>.Component(rawValue: i)
         default: throw ColorReadFailure.invalidStatusForColorRead(s)
         }
     }
     color.r = try parseComponent(components[0])
     color.g = try parseComponent(components[1])
     color.b = try parseComponent(components[2])
-    color.a = componentCount == 4 ? try parseComponent(components[3]) : RGBAColor16.Component(rawValue: 0xffff)
+    color.a = componentCount == 4 ? try parseComponent(components[3]) : RGBAColor<UInt16>.Component(rawValue: 0xffff)
 
     return color
 }
