@@ -11,13 +11,13 @@ enum QueryColor: Int {
     case background = 11
 }
 
-func foregroundColor(fileHandle: FileHandle) throws(ColorReadFailure) -> RGBColor {
+func foregroundColor(fileHandle: FileHandle) throws(ColorReadFailure) -> RGBAColor16 {
     let report = try statusReport(fileHandle: fileHandle, queryColor: .foreground)
     let parsedColor = try parseTerminalColor(s: report)
     return parsedColor
 }
 
-func backgroundColor(fileHandle: FileHandle) throws(ColorReadFailure) -> RGBColor {
+func backgroundColor(fileHandle: FileHandle) throws(ColorReadFailure) -> RGBAColor16 {
     let report = try statusReport(fileHandle: fileHandle, queryColor: .background)
     let parsedColor = try parseTerminalColor(s: report)
     return parsedColor
@@ -33,7 +33,7 @@ enum ColorReadFailure: Error {
     case terminalResponseReadFailure
 }
 
-func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBColor {
+func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBAColor16 {
     var subs = s[...]
 
     if subs.hasSuffix(Codes.bel) {
@@ -56,7 +56,7 @@ func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBColor {
     if !(3...4).contains(componentCount) {
         throw ColorReadFailure.invalidStatusForColorRead(s)
     }
-    var color = RGBColor()
+    var color = RGBAColor16()
     func parseComponent(_ component: Substring) throws(ColorReadFailure) -> RGBComponent16 {
         guard let i = Int(component, radix: 16) else { throw ColorReadFailure.invalidStatusForColorRead(s) }
         switch component.count {

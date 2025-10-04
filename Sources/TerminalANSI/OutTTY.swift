@@ -41,11 +41,11 @@ public final class OutTTY {
         self.write(codes.map(\.ansiCommand.message))
     }
 
-    public func foregroundColor() throws -> RGBColor {
+    public func foregroundColor() throws -> RGBAColor16 {
         try TerminalANSI.foregroundColor(fileHandle: self.fileHandle)
     }
 
-    public func backgroundColor() throws -> RGBColor {
+    public func backgroundColor() throws -> RGBAColor16 {
         try TerminalANSI.backgroundColor(fileHandle: self.fileHandle)
     }
 }

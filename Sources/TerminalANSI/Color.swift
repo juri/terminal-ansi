@@ -4,8 +4,8 @@
 //  Created by Juri Pakaste on 4.10.2025.
 //
 
-/// RGBColor is 16 bits per channel, range 0…65 025/FFFF.
-public struct RGBColor {
+/// RGBAColor16 is 16 bits per channel, range 0…65 025/FFFF.
+public struct RGBAColor16 {
     public var r: RGBComponent16 = RGBComponent16(rawValue: 0)
     public var g: RGBComponent16 = RGBComponent16(rawValue: 0)
     public var b: RGBComponent16 = RGBComponent16(rawValue: 0)
