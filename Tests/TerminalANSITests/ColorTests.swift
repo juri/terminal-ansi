@@ -21,9 +21,10 @@ import Testing
         (RGBAColor16.Component(rawValue: 0xFF00), RGBAColor8.Component(rawValue: 0xFF)),
         (RGBAColor16.Component(rawValue: 0xFFFF), RGBAColor8.Component(rawValue: 0xFF)),
     ]) func scale16To8(_ input: RGBAColor16.Component, _ expected: RGBAColor8.Component) {
+        let result = input.scaledTo8
         #expect(
-            input.scaledTo8 == expected,
-            "Scaling failure, input: 0x\(String(input.rawValue, radix: 16)), expected: 0x\(String(expected.rawValue, radix: 16)), actual: 0x\(String(input.scaledTo8.rawValue, radix: 16))"
+            result == expected,
+            "Scaling failure, input: \(hex(input.rawValue, width: 4)), expected: \(hex(expected.rawValue, width: 2)), actual: \(hex(result.rawValue, width: 2))"
         )
     }
 
