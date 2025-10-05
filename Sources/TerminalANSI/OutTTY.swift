@@ -1,14 +1,14 @@
 //
-//  OutTTY.swift
+//  Terminal.swift
 //
 //  Created by Juri Pakaste on 27.9.2025.
 //
 
 import Foundation
 
-/// `OutTTY` wraps output to a TTY.
+/// `Terminal` wraps a TTY.
 @MainActor
-public final class OutTTY {
+public final class Terminal {
     private let fileHandle: FileHandle
 
     /// Opens TTY and if it succeeds and the device is a TTY, returns a non-nil instance.

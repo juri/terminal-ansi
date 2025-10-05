@@ -9,7 +9,7 @@ import TerminalANSI
 @main
 struct Runner {
     static func main() async throws {
-        guard let outTTY = OutTTY() else {
+        guard let outTTY = Terminal() else {
             return
         }
 
