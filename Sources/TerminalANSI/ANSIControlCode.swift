@@ -127,7 +127,7 @@ public enum SetGraphicsRendition {
     case text256(Int)
     case textBasic(BasicPalette)
     case textBasicBright(BasicPalette)
-    case textRGB(red: Int, green: Int, blue: Int)
+    case textRGB(RGBColor8)
     case underline
 
     public var rawValue: String {
@@ -142,7 +142,7 @@ public enum SetGraphicsRendition {
         case let .text256(index): return "38;5;\(index)"
         case let .textBasic(p): return String(describing: 30 + p.rawValue)
         case let .textBasicBright(p): return String(describing: 90 + p.rawValue)
-        case let .textRGB(red: r, green: g, blue: b): return "38;2;\(r);\(g);\(b)"
+        case let .textRGB(rgb): return "38;2;\(rgb.r.rawValue);\(rgb.g.rawValue);\(rgb.b.rawValue)"
         case .reset: return "0"
         }
     }
