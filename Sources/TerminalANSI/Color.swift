@@ -182,4 +182,14 @@ public extension HSLColor {
             self.hue += 360.0
         }
     }
+
+    /// Create a `HSLColor` from a ``RGBColor``.
+    init<Base>(rgb: RGBColor<Base>) {
+        self.init(red: rgb.r.asDouble, green: rgb.g.asDouble, blue: rgb.b.asDouble)
+    }
+
+    /// Create a `HSLColor` from a ``RGBAColor``.
+    init<Base>(rgba: RGBAColor<Base>) {
+        self.init(rgb: RGBColor<Base>(rgba: rgba))
+    }
 }
