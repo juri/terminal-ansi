@@ -5,6 +5,7 @@
 //  Created by Juri Pakaste on 4.10.2025.
 //
 
+import Numerics
 import TerminalANSI
 import Testing
 
@@ -96,6 +97,28 @@ import Testing
         #expect(
             comp.rawValue == expected,
             "Conversion failure, value: \(value), expected: \(hex(expected, width: 4)), actual: \(hex(comp.rawValue, width: 4))"
+        )
+    }
+
+    @Test(arguments: [
+        (0.39, 0.78, 0.86, HSLColor(hue: 190.2128, saturation: 0.62666, luminance: 0.625)),
+        (0.196, 0.078, 0.039, HSLColor(hue: 14.90446, saturation: 0.66809, luminance: 0.1176)),
+        (0.314, 0.902, 0.471, HSLColor(hue: 136.0204, saturation: 0.75, luminance: 0.608)),
+        (0.296, 0.178, 0.239, HSLColor(hue: 328.98305, saturation: 0.2489, luminance: 0.237)),
+        (0.5, 0.5, 0.5, HSLColor(hue: 0, saturation: 0, luminance: 0.5)),
+    ]) func rgbToHSL(_ red: Double, _ green: Double, _ blue: Double, _ hsl: HSLColor) {
+        let result = HSLColor(red: red, green: green, blue: blue)
+        #expect(
+            result.hue.isApproximatelyEqual(to: hsl.hue, absoluteTolerance: 0.001),
+            "Bad hue: \(result.hue), expected: \(hsl.hue)"
+        )
+        #expect(
+            result.saturation.isApproximatelyEqual(to: hsl.saturation, absoluteTolerance: 0.001),
+            "Bad saturation: \(result.saturation), expected: \(hsl.saturation)"
+        )
+        #expect(
+            result.luminance.isApproximatelyEqual(to: hsl.luminance, absoluteTolerance: 0.001),
+            "Bad luminance: \(result.luminance), expected: \(hsl.luminance)"
         )
     }
 }

@@ -15,6 +15,9 @@ let package = Package(
             targets: ["TerminalANSI"],
         ),
     ],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-numerics", from: "1.0.0")
+    ],
     targets: [
         .executableTarget(
             name: "RunTerminalANSI",
@@ -27,7 +30,10 @@ let package = Package(
         ),
         .testTarget(
             name: "TerminalANSITests",
-            dependencies: ["TerminalANSI"]
+            dependencies: [
+                "TerminalANSI",
+                .product(name: "Numerics", package: "swift-numerics"),
+            ],
         ),
     ]
 )

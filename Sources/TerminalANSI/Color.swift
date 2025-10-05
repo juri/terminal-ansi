@@ -131,3 +131,52 @@ public typealias RGBAColor16 = RGBAColor<UInt16>
 
 /// RGBAColor8 is 16 bits per channel, range 0…255/FF.
 public typealias RGBAColor8 = RGBAColor<UInt8>
+
+/// HSLColor represents color as hue ([0...359]), saturation ([0...1]) and luminance ([0...1]).
+public struct HSLColor: Hashable, Sendable {
+    public var hue: Double
+    public var saturation: Double
+    public var luminance: Double
+
+    public init(hue: Double, saturation: Double, luminance: Double) {
+        self.hue = hue
+        self.saturation = saturation
+        self.luminance = luminance
+    }
+}
+
+public extension HSLColor {
+    // Initialize a HSLColor with RGB values.
+    init(red: Double, green: Double, blue: Double) {
+        let minColor = min(red, green, blue)
+        let maxColor = max(red, green, blue)
+
+        self.luminance = (minColor + maxColor) / 2.0
+
+        guard maxColor != minColor else {
+            self.hue = 0.0
+            self.saturation = 0.0
+            return
+        }
+
+        if self.luminance < 0.5 {
+            self.saturation = (maxColor - minColor) / (maxColor + minColor)
+        } else {
+            self.saturation = (maxColor - minColor) / (2.0 - maxColor - minColor)
+        }
+
+        if maxColor == red {
+            self.hue = (green - blue) / (maxColor - minColor)
+        } else if maxColor == green {
+            self.hue = 2.0 + (blue - red) / (maxColor - minColor)
+        } else {
+            self.hue = 4.0 + (red - green) / (maxColor - minColor)
+        }
+
+        self.hue *= 60.0
+
+        if self.hue < 0.0 {
+            self.hue += 360.0
+        }
+    }
+}
