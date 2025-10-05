@@ -119,6 +119,11 @@ extension RGBAColor.Component {
     public var max: Self { Self(rawValue: Base.max) }
 
     public var asDouble: Double { Double(self.rawValue) / Double(Base.max) }
+
+    /// Initialize with a percentage, range [0...1].
+    public init(percentage: Double) {
+        self.init(rawValue: Base(Double(Base.max) * Swift.min(percentage, Swift.max(0.0, percentage))))
+    }
 }
 
 /// RGBAColor16 is 16 bits per channel, range 0…65 025/FFFF.

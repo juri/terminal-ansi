@@ -86,6 +86,18 @@ import Testing
         let cd = c.asDouble
         #expect(cd > expected && cd < (expected + accuracy))
     }
+
+    @Test(arguments: [
+        (0.0, 0x0000),
+        (0.5, 0x7FFF),
+        (1.0, 0xFFFF),
+    ]) func fromDouble(_ value: Double, _ expected: UInt16) {
+        let comp = RGBAColor16.Component(percentage: value)
+        #expect(
+            comp.rawValue == expected,
+            "Conversion failure, value: \(value), expected: \(hex(expected, width: 4)), actual: \(hex(comp.rawValue, width: 4))"
+        )
+    }
 }
 
 private func hex(_ int: some BinaryInteger, width: Int) -> String {
