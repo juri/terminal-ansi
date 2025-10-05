@@ -118,8 +118,11 @@ extension RGBAColor<UInt16>.Component {
 }
 
 extension RGBAColor.Component {
-    public var min: Self { Self(rawValue: 0) }
-    public var max: Self { Self(rawValue: Base.max) }
+    /// Minimum value for this component type.
+    public static var min: Self { Self(rawValue: 0) }
+
+    /// Maximum value for this component type.
+    public static var max: Self { Self(rawValue: Base.max) }
 
     public var asDouble: Double { Double(self.rawValue) / Double(Base.max) }
 
