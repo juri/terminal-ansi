@@ -132,8 +132,8 @@ extension RGBAColor.Component {
     /// Maximum value for this component type.
     public static var max: Self { Self(rawValue: Base.max) }
 
-    /// Convert the value of this component to a double, in the range [0...1].
-    public var asDouble: Double { Double(self.rawValue) / Double(Base.max) }
+    /// Convert the value of this component to a percentage, in the range [0...1].
+    public var percentage: Double { Double(self.rawValue) / Double(Base.max) }
 
     /// Initialize with a percentage, range [0...1].
     public init(percentage: Double) {
@@ -197,7 +197,7 @@ public extension HSLColor {
 
     /// Create a `HSLColor` from a ``RGBColor``.
     init<Base>(rgb: RGBColor<Base>) {
-        self.init(red: rgb.r.asDouble, green: rgb.g.asDouble, blue: rgb.b.asDouble)
+        self.init(red: rgb.r.percentage, green: rgb.g.percentage, blue: rgb.b.percentage)
     }
 
     /// Create a `HSLColor` from a ``RGBAColor``.

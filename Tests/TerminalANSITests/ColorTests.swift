@@ -84,7 +84,7 @@ import Testing
         (0xF000, 0.937514, 0.00001),
     ]) func asDouble(_ input: UInt16, _ expected: Double, _ accuracy: Double) {
         let c = RGBAColor16.Component(rawValue: input)
-        let cd = c.asDouble
+        let cd = c.percentage
         #expect(
             cd.isApproximatelyEqual(to: expected, absoluteTolerance: accuracy),
             "Bad double component value, input: \(hex(input, width: 4)), expected: \(expected), actual: \(cd)",
