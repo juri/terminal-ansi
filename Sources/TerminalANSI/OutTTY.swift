@@ -48,4 +48,8 @@ public final class OutTTY {
     public func backgroundColor() throws -> RGBAColor<UInt16> {
         try TerminalANSI.backgroundColor(fileHandle: self.fileHandle)
     }
+
+    public func isDarkBackground() throws -> Bool {
+        try HSLColor(rgba: self.backgroundColor()).luminance < 0.5
+    }
 }
