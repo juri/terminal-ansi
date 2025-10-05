@@ -68,6 +68,14 @@ import Testing
             "Creation failure, input: \(hex(input, width: 1)), expected: \(hex(expected, width: 4)), actual: \(hex(result.rawValue, width: 4))"
         )
     }
+
+    @Test func rgbaToRGB() {
+        let r = RGBAColor16.Component(rawValue: 0x1234)
+        let g = RGBAColor16.Component(rawValue: 0x5678)
+        let b = RGBAColor16.Component(rawValue: 0xABCD)
+        let a = RGBAColor16.Component(rawValue: 0x5555)
+        #expect(RGBColor(rgba: RGBAColor16(r: r, g: g, b: b, a: a)) == RGBColor<UInt16>(r: r, g: g, b: b))
+    }
 }
 
 private func hex(_ int: some BinaryInteger, width: Int) -> String {

@@ -4,6 +4,46 @@
 //  Created by Juri Pakaste on 4.10.2025.
 //
 
+/// RGBColor is RGB color with Base as the value range of each channel.
+public struct RGBColor<Base: BinaryInteger & Sendable>: Hashable, Sendable {
+    public typealias Component = RGBAColor<Base>.Component
+
+    public var r: Component = Component(rawValue: 0)
+    public var g: Component = Component(rawValue: 0)
+    public var b: Component = Component(rawValue: 0)
+
+    public init(r: Component, g: Component, b: Component) {
+        self.r = r
+        self.g = g
+        self.b = b
+    }
+
+    public init() {
+        self.init(
+            r: Component(rawValue: 0),
+            g: Component(rawValue: 0),
+            b: Component(rawValue: 0),
+        )
+    }
+}
+
+extension RGBColor<UInt16> {
+    public init(rgba: RGBAColor<Base>) {
+        self.init(r: rgba.r, g: rgba.g, b: rgba.b)
+    }
+
+    public var scaledTo8: RGBColor<UInt8> {
+        return RGBColor<UInt8>(
+            r: self.r.scaledTo8,
+            g: self.g.scaledTo8,
+            b: self.b.scaledTo8,
+        )
+    }
+}
+
+/// RGBColor8 is 16 bits per channel, range 0…255/FF.
+public typealias RGBColor8 = RGBColor<UInt8>
+
 /// RGBAColor is RGBA color with Base as the value range of each channel.
 public struct RGBAColor<Base: BinaryInteger & Sendable>: Hashable, Sendable {
     public struct Component: RawRepresentable, Hashable, Sendable {
