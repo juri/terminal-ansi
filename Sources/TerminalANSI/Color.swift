@@ -79,6 +79,13 @@ public struct RGBAColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: H
     }
 }
 
+extension RGBAColor {
+    /// Initialize a `RGBAColor` with a ``RGBColor`` and an alpha channel.
+    public init(rgb: RGBColor<Base>, a: Component = .max) {
+        self.init(r: rgb.r, g: rgb.g, b: rgb.b, a: a)
+    }
+}
+
 extension RGBAColor<UInt16>.Component {
     /// Scale a `UInt16` based `RGBAColor.Component` to a `UInt8` based one.
     public var scaledTo8: RGBAColor<UInt8>.Component {
