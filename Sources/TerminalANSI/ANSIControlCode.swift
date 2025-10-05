@@ -120,7 +120,7 @@ public enum SetGraphicsRendition {
     case background256(Int)
     case backgroundBasic(BasicPalette)
     case backgroundBasicBright(BasicPalette)
-    case backgroundRGB(red: Int, green: Int, blue: Int)
+    case backgroundRGB(RGBColor8)
     case bold
     case italic
     case reset
@@ -135,7 +135,7 @@ public enum SetGraphicsRendition {
         case let .background256(index): return "48;5;\(index)"
         case let .backgroundBasic(p): return String(describing: 40 + p.rawValue)
         case let .backgroundBasicBright(p): return String(describing: 100 + p.rawValue)
-        case let .backgroundRGB(red: r, green: g, blue: b): return "48;2;\(r);\(g);\(b)"
+        case let .backgroundRGB(rgb): return "48;2;\(rgb.r.rawValue);\(rgb.g.rawValue);\(rgb.b.rawValue)"
         case .bold: return "1"
         case .italic: return "3"
         case .underline: return "4"
