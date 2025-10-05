@@ -26,4 +26,53 @@ import Testing
             "Scaling failure, input: 0x\(String(input.rawValue, radix: 16)), expected: 0x\(String(expected.rawValue, radix: 16)), actual: 0x\(String(input.scaledTo8.rawValue, radix: 16))"
         )
     }
+
+    @Test(arguments: [
+        (0x0, 0x0000),
+        (0x5, 0x5555),
+        (0xA, 0xAAAA),
+        (0xF, 0xFFFF),
+    ]) func init16With4Bit(_ input: Int, _ expected: UInt16) {
+        let result = RGBAColor16.Component(value4bit: input)
+        #expect(
+            result == RGBAColor16.Component(rawValue: expected),
+            "Creation failure, input: \(hex(input, width: 1)), expected: \(hex(expected, width: 4)), actual: \(hex(result.rawValue, width: 4))"
+        )
+    }
+
+    @Test(arguments: [
+        (0x00, 0x0000),
+        (0x34, 0x3434),
+        (0x55, 0x5555),
+        (0x96, 0x9696),
+        (0xFF, 0xFFFF),
+    ]) func init16With8Bit(_ input: Int, _ expected: UInt16) {
+        let result = RGBAColor16.Component(value8bit: input)
+        #expect(
+            result == RGBAColor16.Component(rawValue: expected),
+            "Creation failure, input: \(hex(input, width: 1)), expected: \(hex(expected, width: 4)), actual: \(hex(result.rawValue, width: 4))"
+        )
+    }
+
+    @Test(arguments: [
+        (0x000, 0x0000),
+        (0x34B, 0x34BB),
+        (0x555, 0x5555),
+        (0x962, 0x9622),
+        (0xFFF, 0xFFFF),
+    ]) func init16With12Bit(_ input: Int, _ expected: UInt16) {
+        let result = RGBAColor16.Component(value12bit: input)
+        #expect(
+            result == RGBAColor16.Component(rawValue: expected),
+            "Creation failure, input: \(hex(input, width: 1)), expected: \(hex(expected, width: 4)), actual: \(hex(result.rawValue, width: 4))"
+        )
+    }
+}
+
+private func hex(_ int: some BinaryInteger, width: Int) -> String {
+    let s = String(int, radix: 16, uppercase: true)
+    let length = s.count
+    let padding = width - length
+    let full = padding > 0 ? String(repeating: "0", count: padding) + s : s
+    return "0x" + full
 }

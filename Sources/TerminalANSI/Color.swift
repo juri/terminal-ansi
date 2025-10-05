@@ -43,18 +43,18 @@ extension RGBAColor<UInt16> {
 
 extension RGBAColor<UInt16>.Component {
     /// Initialize with a 4 bit number, i.e. one hex digit, 0…F.
-    init(value4bit value: some BinaryInteger) {
-        self.rawValue = UInt16(value * value * value * value)
+    public init(value4bit value: some BinaryInteger) {
+        self.rawValue = UInt16(value << 12 | value << 8 | value << 4 | value)
     }
 
     /// Initialize with a 8 bit number, i.e. two hex digits, 0…FF.
-    init(value8bit value: some BinaryInteger) {
-        self.rawValue = UInt16(value * value)
+    public init(value8bit value: some BinaryInteger) {
+        self.rawValue = UInt16(value << 8 | value)
     }
 
     /// Initialize with a 12 bit number, i.e. three hex digits, 0…FFF.
-    init(value12bit value: some BinaryInteger) {
-        self.rawValue = UInt16((value << 4) & (value | 0xf))
+    public init(value12bit value: some BinaryInteger) {
+        self.rawValue = UInt16((value << 4) | (value & 0xf))
     }
 }
 
