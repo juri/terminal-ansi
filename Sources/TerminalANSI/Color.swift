@@ -28,16 +28,19 @@ public struct RGBColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: Ha
 }
 
 extension RGBColor<UInt16> {
-    public init(rgba: RGBAColor<Base>) {
-        self.init(r: rgba.r, g: rgba.g, b: rgba.b)
-    }
-
     public var scaledTo8: RGBColor<UInt8> {
         return RGBColor<UInt8>(
             r: self.r.scaledTo8,
             g: self.g.scaledTo8,
             b: self.b.scaledTo8,
         )
+    }
+}
+
+extension RGBColor {
+    /// Convert a ``RGBAColor`` into a `RGBColor`, dropping the alpha channel.
+    public init(rgba: RGBAColor<Base>) {
+        self.init(r: rgba.r, g: rgba.g, b: rgba.b)
     }
 }
 
