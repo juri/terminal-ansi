@@ -76,6 +76,16 @@ import Testing
         let a = RGBAColor16.Component(rawValue: 0x5555)
         #expect(RGBColor(rgba: RGBAColor16(r: r, g: g, b: b, a: a)) == RGBColor<UInt16>(r: r, g: g, b: b))
     }
+
+    @Test(arguments: [
+        (0x1234, 0.071107, 0.00001),
+        (0x7FFF, 0.499992, 0.00001),
+        (0xF000, 0.937514, 0.00001),
+    ]) func asDouble(_ input: UInt16, _ expected: Double, _ accuracy: Double) {
+        let c = RGBAColor16.Component(rawValue: input)
+        let cd = c.asDouble
+        #expect(cd > expected && cd < (expected + accuracy))
+    }
 }
 
 private func hex(_ int: some BinaryInteger, width: Int) -> String {
