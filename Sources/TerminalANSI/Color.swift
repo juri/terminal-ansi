@@ -4,7 +4,7 @@
 //  Created by Juri Pakaste on 4.10.2025.
 //
 
-/// RGBColor is RGB color with Base as the value range of each channel.
+/// `RGBColor` is RGB color with Base as the value range of each channel.
 public struct RGBColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: Hashable, Sendable {
     public typealias Component = RGBAColor<Base>.Component
 
@@ -44,10 +44,10 @@ extension RGBColor {
     }
 }
 
-/// RGBColor8 is 16 bits per channel, range 0…255/FF.
+/// `RGBColor8` is 8 bits per channel, range 0…255/FF.
 public typealias RGBColor8 = RGBColor<UInt8>
 
-/// RGBAColor is RGBA color with Base as the value range of each channel.
+/// `RGBAColor` is RGBA color with `Base` as the value range of each channel.
 public struct RGBAColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: Hashable, Sendable {
     public struct Component: RawRepresentable, Hashable, Sendable {
         public var rawValue: Base
@@ -80,6 +80,7 @@ public struct RGBAColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: H
 }
 
 extension RGBAColor<UInt16>.Component {
+    /// Scale a `UInt16` based `RGBAColor.Component` to a `UInt8` based one.
     public var scaledTo8: RGBAColor<UInt8>.Component {
         // No idea if this is the best way to do it. This way everything from 0x0000 to 0x00FF goes
         // to 0x00. Maybe everything from 0x007F should be rounded to 0x01? That way the buckets
@@ -90,6 +91,7 @@ extension RGBAColor<UInt16>.Component {
 }
 
 extension RGBAColor<UInt16> {
+    /// Scale a `UInt16` based `RGBAColor` to a `UInt8` based one.
     public var scaledTo8: RGBAColor<UInt8> {
         return RGBAColor<UInt8>(
             r: self.r.scaledTo8,
@@ -102,16 +104,22 @@ extension RGBAColor<UInt16> {
 
 extension RGBAColor<UInt16>.Component {
     /// Initialize with a 4 bit number, i.e. one hex digit, 0…F.
+    ///
+    /// The number is repeated four times, i.e. 0x3 becomes 0x3333.
     public init(value4bit value: some BinaryInteger) {
         self.rawValue = UInt16(value << 12 | value << 8 | value << 4 | value)
     }
 
     /// Initialize with a 8 bit number, i.e. two hex digits, 0…FF.
+    ///
+    /// The number is repeated, i.e. 0x37 becomes 0x3737.
     public init(value8bit value: some BinaryInteger) {
         self.rawValue = UInt16(value << 8 | value)
     }
 
     /// Initialize with a 12 bit number, i.e. three hex digits, 0…FFF.
+    ///
+    /// The last number is repeated, i.e. 0x379 becomes 0x3799.
     public init(value12bit value: some BinaryInteger) {
         self.rawValue = UInt16((value << 4) | (value & 0xf))
     }
@@ -124,6 +132,7 @@ extension RGBAColor.Component {
     /// Maximum value for this component type.
     public static var max: Self { Self(rawValue: Base.max) }
 
+    /// Convert the value of this component to a double, in the range [0...1].
     public var asDouble: Double { Double(self.rawValue) / Double(Base.max) }
 
     /// Initialize with a percentage, range [0...1].
@@ -132,13 +141,13 @@ extension RGBAColor.Component {
     }
 }
 
-/// RGBAColor16 is 16 bits per channel, range 0…65 025/FFFF.
+/// `RGBAColor16` is 16 bits per channel, range 0…65 025/FFFF.
 public typealias RGBAColor16 = RGBAColor<UInt16>
 
-/// RGBAColor8 is 16 bits per channel, range 0…255/FF.
+/// `RGBAColor8` is 8 bits per channel, range 0…255/FF.
 public typealias RGBAColor8 = RGBAColor<UInt8>
 
-/// HSLColor represents color as hue ([0...359]), saturation ([0...1]) and luminance ([0...1]).
+/// `HSLColor` represents color as hue ([0...359]), saturation ([0...1]) and luminance ([0...1]).
 public struct HSLColor: Hashable, Sendable {
     public var hue: Double
     public var saturation: Double
