@@ -49,7 +49,7 @@ public final class Terminal {
         try TerminalANSI.backgroundColor(fileHandle: self.fileHandle)
     }
 
-    public func isDarkBackground() throws -> Bool {
+    public func hasDarkBackground() throws -> Bool {
         try HSLColor(rgba: self.backgroundColor()).luminance < 0.5
     }
 }
