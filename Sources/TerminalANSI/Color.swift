@@ -14,10 +14,26 @@ public struct RGBAColor<Base: BinaryInteger & Sendable>: Hashable, Sendable {
         }
     }
 
-    public var r: Component = Component(rawValue: 0)
-    public var g: Component = Component(rawValue: 0)
-    public var b: Component = Component(rawValue: 0)
-    public var a: Component = Component(rawValue: 0)
+    public var r: Component
+    public var g: Component
+    public var b: Component
+    public var a: Component
+
+    public init(r: Component, g: Component, b: Component, a: Component) {
+        self.r = r
+        self.g = g
+        self.b = b
+        self.a = a
+    }
+
+    public init() {
+        self.init(
+            r: Component(rawValue: 0),
+            g: Component(rawValue: 0),
+            b: Component(rawValue: 0),
+            a: Component(rawValue: 0),
+        )
+    }
 }
 
 extension RGBAColor<UInt16>.Component {
