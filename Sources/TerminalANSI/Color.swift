@@ -8,10 +8,16 @@
 public struct RGBColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: Hashable, Sendable {
     public typealias Component = RGBAColor<Base>.Component
 
+    /// The red channel of the color.
     public var r: Component = Component(rawValue: 0)
+
+    /// The green channel of the color.
     public var g: Component = Component(rawValue: 0)
+
+    /// The blue channel of the color.
     public var b: Component = Component(rawValue: 0)
 
+    /// Create a `RGBColor` with component values.
     public init(r: Component, g: Component, b: Component) {
         self.r = r
         self.g = g
@@ -25,6 +31,7 @@ public struct RGBColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: Ha
         self.b = Component(percentage: b)
     }
 
+    /// Initialize a `RGBColor` with all-zero values, i.e. as black.
     public init() {
         self.init(
             r: Component(rawValue: 0),
@@ -35,6 +42,7 @@ public struct RGBColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: Ha
 }
 
 extension RGBColor<UInt16> {
+    /// Scale a `RGBColor` from 16 bit channels to 8 bit channels.
     public var scaledTo8: RGBColor<UInt8> {
         return RGBColor<UInt8>(
             r: self.r.scaledTo8,
@@ -50,6 +58,7 @@ extension RGBColor {
         self.init(r: rgba.r, g: rgba.g, b: rgba.b)
     }
 
+    /// Create a `RGBColor` from a ``HSLColor``.
     public init(hsl: HSLColor) {
         guard hsl.saturation > 0 else {
             let gray = Component(percentage: hsl.luminance)
@@ -116,11 +125,19 @@ public struct RGBAColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: H
         }
     }
 
+    /// The red channel of the color.
     public var r: Component
+
+    /// The green channel of the color.
     public var g: Component
+
+    /// The blue channel of the color.
     public var b: Component
+
+    /// The alpha channel of the color.
     public var a: Component
 
+    /// Create a `RGBAColor` with component values.
     public init(r: Component, g: Component, b: Component, a: Component) {
         self.r = r
         self.g = g
@@ -128,6 +145,7 @@ public struct RGBAColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: H
         self.a = a
     }
 
+    /// Initialize a `RGBColor` with all-zero values, i.e. as transparent black.
     public init() {
         self.init(
             r: Component(rawValue: 0),
