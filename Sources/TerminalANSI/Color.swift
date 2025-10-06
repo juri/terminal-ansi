@@ -57,10 +57,6 @@ extension RGBColor {
             return
         }
 
-        var tr: Double
-        var tg: Double
-        var tb: Double
-
         let t1: Double =
             if hsl.luminance < 0.5 {
                 hsl.luminance * (1.0 + hsl.saturation)
@@ -70,9 +66,9 @@ extension RGBColor {
 
         let t2 = 2 * hsl.luminance - t1
         let hue = hsl.hue / 360
-        tr = hue + 1.0 / 3.0
-        tg = hue
-        tb = hue - 1.0 / 3.0
+        var tr = hue + 1.0 / 3.0
+        var tg = hue
+        var tb = hue - 1.0 / 3.0
 
         if tr < 0.0 { tr += 1.0 }
         if tr > 1.0 { tr -= 1.0 }
