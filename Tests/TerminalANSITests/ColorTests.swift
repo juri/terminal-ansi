@@ -124,6 +124,19 @@ import Testing
             "Bad luminance: \(result.luminance), expected: \(hsl.luminance)"
         )
     }
+
+    @Test(arguments: [
+        (190.2128, 0.62666, 0.625, RGBColor<UInt16>(percentageR: 0.39, g: 0.78, b: 0.86)),
+        (14.90446, 0.66809, 0.1176, RGBColor<UInt16>(percentageR: 0.19615, g: 0.078, b: 0.039)),
+        (136.0204, 0.75, 0.608, RGBColor<UInt16>(percentageR: 0.314, g: 0.902, b: 0.471)),
+        (328.98305, 0.2489, 0.237, RGBColor<UInt16>(percentageR: 0.296, g: 0.178, b: 0.239)),
+        (0, 0, 0.5, RGBColor<UInt16>(percentageR: 0.5, g: 0.5, b: 0.5)),
+    ]) func hslToRGB(_ h: Double, _ s: Double, _ l: Double, _ rgb: RGBColor<UInt16>) {
+        let result = RGBColor<UInt16>(hsl: HSLColor(hue: h, saturation: s, luminance: l))
+        #expect(result.r.percentage.isApproximatelyEqual(to: rgb.r.percentage, absoluteTolerance: 0.0001))
+        #expect(result.g.percentage.isApproximatelyEqual(to: rgb.g.percentage, absoluteTolerance: 0.0001))
+        #expect(result.b.percentage.isApproximatelyEqual(to: rgb.b.percentage, absoluteTolerance: 0.0001))
+    }
 }
 
 private func hex(_ int: some BinaryInteger, width: Int) -> String {

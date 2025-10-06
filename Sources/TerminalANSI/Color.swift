@@ -49,6 +49,62 @@ extension RGBColor {
     public init(rgba: RGBAColor<Base>) {
         self.init(r: rgba.r, g: rgba.g, b: rgba.b)
     }
+
+    public init(hsl: HSLColor) {
+        guard hsl.saturation > 0 else {
+            let gray = Component(percentage: hsl.luminance)
+            self.init(r: gray, g: gray, b: gray)
+            return
+        }
+
+        var tr: Double
+        var tg: Double
+        var tb: Double
+
+        let t1: Double =
+            if hsl.luminance < 0.5 {
+                hsl.luminance * (1.0 + hsl.saturation)
+            } else {
+                hsl.luminance + hsl.saturation - (hsl.luminance * hsl.saturation)
+            }
+
+        let t2 = 2 * hsl.luminance - t1
+        let hue = hsl.hue / 360
+        tr = hue + 1.0 / 3.0
+        tg = hue
+        tb = hue - 1.0 / 3.0
+
+        if tr < 0.0 { tr += 1.0 }
+        if tr > 1.0 { tr -= 1.0 }
+
+        if tg < 0.0 { tg += 1.0 }
+        if tg > 1.0 { tg -= 1.0 }
+
+        if tb < 0.0 { tb += 1.0 }
+        if tb > 1.0 { tb -= 1.0 }
+
+        let red = colorComponent(t: tr, t1: t1, t2: t2)
+        let green = colorComponent(t: tg, t1: t1, t2: t2)
+        let blue = colorComponent(t: tb, t1: t1, t2: t2)
+
+        self.init(
+            r: Component(percentage: red),
+            g: Component(percentage: green),
+            b: Component(percentage: blue),
+        )
+    }
+}
+
+private func colorComponent(t: Double, t1: Double, t2: Double) -> Double {
+    if 6.0 * t < 1.0 {
+        t2 + (t1 - t2) * 6 * t
+    } else if 2.0 * t < 1 {
+        t1
+    } else if 3.0 * t < 2.0 {
+        t2 + (t1 - t2) * (2.0 / 3.0 - t) * 6.0
+    } else {
+        t2
+    }
 }
 
 /// `RGBColor8` is 8 bits per channel, range 0…255/FF.
