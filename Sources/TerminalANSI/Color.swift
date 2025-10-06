@@ -18,6 +18,13 @@ public struct RGBColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: Ha
         self.b = b
     }
 
+    /// Initialize a `RGBColor` with percentage values in the range [0...1].
+    public init(percentageR r: Double, g: Double, b: Double) {
+        self.r = Component(percentage: r)
+        self.g = Component(percentage: g)
+        self.b = Component(percentage: b)
+    }
+
     public init() {
         self.init(
             r: Component(rawValue: 0),
