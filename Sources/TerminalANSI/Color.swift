@@ -38,6 +38,13 @@ public struct RGBColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: Ha
         self.b = Component(rawValue: b)
     }
 
+    /// Initialize a `RGBColor` with `Int` component values.
+    public init(intR r: Int, g: Int, b: Int) {
+        self.r = Component(rawValue: Base(r))
+        self.g = Component(rawValue: Base(g))
+        self.b = Component(rawValue: Base(b))
+    }
+
     /// Initialize a `RGBColor` with all-zero values, i.e. as black.
     public init() {
         self.init(
@@ -158,6 +165,14 @@ public struct RGBAColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: H
         self.g = Component(rawValue: g)
         self.b = Component(rawValue: b)
         self.a = Component(rawValue: a)
+    }
+
+    /// Initialize a `RGBAColor` with `Int` component values.
+    public init(intR r: Int, g: Int, b: Int, a: Int) {
+        self.r = Component(rawValue: Base(r))
+        self.g = Component(rawValue: Base(g))
+        self.b = Component(rawValue: Base(b))
+        self.a = Component(rawValue: Base(a))
     }
 
     /// Initialize a `RGBColor` with all-zero values, i.e. as transparent black.
