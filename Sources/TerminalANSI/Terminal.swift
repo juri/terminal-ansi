@@ -52,4 +52,8 @@ public final class Terminal {
     public func hasDarkBackground() throws -> Bool {
         try HSLColor(rgba: self.backgroundColor()).luminance < 0.5
     }
+
+    public func size() throws -> TerminalSize {
+        try TerminalSize.current(fileHandle: self.fileHandle)
+    }
 }
