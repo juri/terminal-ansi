@@ -5,6 +5,8 @@ This is a Swift package for outputting terminal ANSI control codes and inspectin
 ## Usage
 
 ```swift
+import TerminalANSI
+
 guard let terminal = Terminal() else {
     return
 }
