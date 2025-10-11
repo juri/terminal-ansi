@@ -1,3 +1,6 @@
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fjuri%2Fterminal-ansi%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/juri/terminal-ansi)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fjuri%2Fterminal-ansi%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/juri/terminal-ansi)
+
 # terminal-ansi
 
 This is a Swift package for outputting terminal ANSI control codes and inspecting the current terminal. It has been extracted and expanded from [tui-fuzzy-finder].
