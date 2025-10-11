@@ -96,8 +96,8 @@ func statusReport(fileHandle: FileHandle, queryColor: QueryColor) throws(ColorRe
     }
 
     var noEcho = originalTermios
-    noEcho.c_lflag ^= UInt(ECHO)
-    noEcho.c_lflag ^= UInt(ICANON)
+    noEcho.c_lflag ^= tcflag_t(ECHO)
+    noEcho.c_lflag ^= tcflag_t(ICANON)
 
     tcsetattr(fileHandle.fileDescriptor, TCSAFLUSH, &noEcho)
 
