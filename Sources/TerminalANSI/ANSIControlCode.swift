@@ -87,6 +87,11 @@ public struct ANSICommand: Equatable, Sendable {
     public var rawValue: String
     public var escape: Bool = true
 
+    public init(rawValue: String, escape: Bool = true) {
+        self.rawValue = rawValue
+        self.escape = escape
+    }
+
     public var message: String {
         "\(self.escape ? Codes.esc : "")\(self.rawValue)"
     }
