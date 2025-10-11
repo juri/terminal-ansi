@@ -27,7 +27,11 @@ let package = Package(
         ),
         .target(
             name: "TerminalANSI",
+            dependencies: [
+                "CSelect"
+            ],
         ),
+        .target(name: "CSelect"),
         .testTarget(
             name: "TerminalANSITests",
             dependencies: [

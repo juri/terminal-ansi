@@ -4,6 +4,7 @@
 //  Created by Juri Pakaste on 28.9.2025.
 //
 
+import CSelect
 import Foundation
 
 enum QueryColor: Int {
@@ -131,8 +132,8 @@ func waitForData(fileDescriptor: Int32, timeout: Duration) throws(ColorReadFailu
 
     var readfds = fd_set()
 
-    fdZero(&readfds)
-    fdSet(fileDescriptor, &readfds)
+    fd_zero(&readfds)
+    fd_setter(fileDescriptor, &readfds)
 
     while true {
         let result = Darwin.select(fileDescriptor + 1, &readfds, nil, nil, &tv)
