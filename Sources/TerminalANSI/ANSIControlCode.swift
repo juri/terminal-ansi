@@ -126,6 +126,7 @@ public enum SetGraphicsRendition: Equatable, Sendable {
     case backgroundBasic(BasicPalette)
     case backgroundBasicBright(BasicPalette)
     case backgroundRGB(RGBColor8)
+    case blink
     case bold
     case faint
     case italic
@@ -143,6 +144,7 @@ public enum SetGraphicsRendition: Equatable, Sendable {
         case let .backgroundBasic(p): return String(describing: 40 + p.rawValue)
         case let .backgroundBasicBright(p): return String(describing: 100 + p.rawValue)
         case let .backgroundRGB(rgb): return "48;2;\(rgb.r.rawValue);\(rgb.g.rawValue);\(rgb.b.rawValue)"
+        case .blink: return "5"
         case .bold: return "1"
         case .faint: return "2"
         case .italic: return "3"
