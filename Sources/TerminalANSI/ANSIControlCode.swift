@@ -129,6 +129,7 @@ public enum SetGraphicsRendition: Equatable, Sendable {
     case bold
     case faint
     case italic
+    case overline
     case reset
     case text256(Int)
     case textBasic(BasicPalette)
@@ -145,6 +146,7 @@ public enum SetGraphicsRendition: Equatable, Sendable {
         case .bold: return "1"
         case .faint: return "2"
         case .italic: return "3"
+        case .overline: return "53"
         case .underline: return "4"
         case let .text256(index): return "38;5;\(index)"
         case let .textBasic(p): return String(describing: 30 + p.rawValue)
