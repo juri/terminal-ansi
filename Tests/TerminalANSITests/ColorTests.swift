@@ -137,6 +137,18 @@ import Testing
         #expect(result.g.percentage.isApproximatelyEqual(to: rgb.g.percentage, absoluteTolerance: 0.0001))
         #expect(result.b.percentage.isApproximatelyEqual(to: rgb.b.percentage, absoluteTolerance: 0.0001))
     }
+
+    @Test func `scale 16bit RGB to 8bit`() {
+        let color = RGBColor<UInt16>(intR: 0x1234, g: 0x5678, b: 0x9abc)
+        let expected = RGBColor<UInt8>(intR: 0x12, g: 0x56, b: 0x9a)
+        #expect(color.scaledTo8 == expected)
+    }
+
+    @Test func `scale 16bit RGBA to 8bit`() {
+        let color = RGBAColor<UInt16>(intR: 0x1234, g: 0x5678, b: 0x9abc, a: 0x3421)
+        let expected = RGBAColor<UInt8>(intR: 0x12, g: 0x56, b: 0x9a, a: 0x34)
+        #expect(color.scaledTo8 == expected)
+    }
 }
 
 private func hex(_ int: some BinaryInteger, width: Int) -> String {
