@@ -37,4 +37,15 @@ terminal.writeCodes([
 ])
 ```
 
+## Features
+
+- Query terminal background and foreground colors
+- Query terminal size
+- Parse color strings (`RGB`, `RRGGBB`, `RGBA`, `RRGGBBAA`, with or without leading `#`)
+- Convert color to and from HSL
+- Cursor movements, alternative buffer, erasing contents
+- Colors, text styles
+- Hyperlinks (OSC 8)
+- Terminal progress bar (OSC 9)
+
 [tui-fuzzy-finder]: https://github.com/juri/tui-fuzzy-finder/
