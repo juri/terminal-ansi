@@ -239,6 +239,63 @@ public struct RGBAColor<Base: UnsignedInteger & FixedWidthInteger & Sendable>: H
     }
 }
 
+extension RGBAColor<UInt8> {
+    /// Initialize a `RGBAColor<UInt8>` from a CSS-style hex color string with alpha.
+    ///
+    /// Supports both 4-character (`#RGBA` or `RGBA`) and 8-character (`#RRGGBBAA` or `RRGGBBAA`) formats.
+    /// The leading `#` is optional.
+    ///
+    /// - Parameter hexString: A hex color string (e.g., "#FF0000FF", "FF0000FF", "#F00F", "F00F")
+    /// - Returns: A `RGBAColor<UInt8>` if parsing succeeds, `nil` otherwise
+    public init?(hexString: String) {
+        let cleanedString = hexString.hasPrefix("#") ? String(hexString.dropFirst()) : hexString
+
+        guard cleanedString.allSatisfy({ $0.isHexDigit }) else {
+            return nil
+        }
+
+        switch cleanedString.count {
+        case 4:
+            // 4-character format: RGBA -> RRGGBBAA
+            let rs = cleanedString.prefix(1)
+            let gs = cleanedString.dropFirst().prefix(1)
+            let bs = cleanedString.dropFirst(2).prefix(1)
+            let `as` = cleanedString.dropFirst(3).prefix(1)
+
+            guard let r = UInt8(rs, radix: 16),
+                let g = UInt8(gs, radix: 16),
+                let b = UInt8(bs, radix: 16),
+                let a = UInt8(`as`, radix: 16)
+            else {
+                return nil
+            }
+
+            // Expand each digit: F -> FF (15 -> 255)
+            self.init(rawR: r * 17, g: g * 17, b: b * 17, a: a * 17)
+
+        case 8:
+            // 8-character format: RRGGBBAA
+            let rs = String(cleanedString.prefix(2))
+            let gs = String(cleanedString.dropFirst(2).prefix(2))
+            let bs = String(cleanedString.dropFirst(4).prefix(2))
+            let `as` = String(cleanedString.dropFirst(6).prefix(2))
+
+            guard let r = UInt8(rs, radix: 16),
+                let g = UInt8(gs, radix: 16),
+                let b = UInt8(bs, radix: 16),
+                let a = UInt8(`as`, radix: 16)
+            else {
+                return nil
+            }
+
+            self.init(rawR: r, g: g, b: b, a: a)
+
+        default:
+            return nil
+        }
+    }
+}
+
 extension RGBAColor {
     /// Initialize a `RGBAColor` with a ``RGBColor`` and an alpha channel.
     public init(rgb: RGBColor<Base>, a: Component = .max) {
