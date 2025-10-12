@@ -66,6 +66,57 @@ extension RGBColor<UInt16> {
     }
 }
 
+extension RGBColor<UInt8> {
+    /// Initialize a `RGBColor<UInt8>` from a CSS-style hex color string.
+    ///
+    /// Supports both 3-character (`#RGB` or `RGB`) and 6-character (`#RRGGBB` or `RRGGBB`) formats.
+    /// The leading `#` is optional.
+    ///
+    /// - Parameter hexString: A hex color string (e.g., "#FF0000", "FF0000", "#F00", "F00")
+    /// - Returns: A `RGBColor<UInt8>` if parsing succeeds, `nil` otherwise
+    public init?(hexString: String) {
+        let cleanedString = hexString.hasPrefix("#") ? String(hexString.dropFirst()) : hexString
+
+        guard cleanedString.allSatisfy({ $0.isHexDigit }) else {
+            return nil
+        }
+
+        switch cleanedString.count {
+        case 3:
+            // 3-character format: RGB -> RRGGBB
+            guard let r = UInt8(String(cleanedString[cleanedString.startIndex]), radix: 16),
+                let g = UInt8(
+                    String(cleanedString[cleanedString.index(cleanedString.startIndex, offsetBy: 1)]), radix: 16),
+                let b = UInt8(
+                    String(cleanedString[cleanedString.index(cleanedString.startIndex, offsetBy: 2)]), radix: 16)
+            else {
+                return nil
+            }
+
+            // Expand each digit: F -> FF (15 -> 255)
+            self.init(rawR: r * 17, g: g * 17, b: b * 17)
+
+        case 6:
+            // 6-character format: RRGGBB
+            let rString = String(cleanedString.prefix(2))
+            let gString = String(cleanedString.dropFirst(2).prefix(2))
+            let bString = String(cleanedString.dropFirst(4).prefix(2))
+
+            guard let r = UInt8(rString, radix: 16),
+                let g = UInt8(gString, radix: 16),
+                let b = UInt8(bString, radix: 16)
+            else {
+                return nil
+            }
+
+            self.init(rawR: r, g: g, b: b)
+
+        default:
+            return nil
+        }
+    }
+}
+
 extension RGBColor {
     /// Convert a ``RGBAColor`` into a `RGBColor`, dropping the alpha channel.
     public init(rgba: RGBAColor<Base>) {
