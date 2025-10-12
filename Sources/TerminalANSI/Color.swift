@@ -84,11 +84,13 @@ extension RGBColor<UInt8> {
         switch cleanedString.count {
         case 3:
             // 3-character format: RGB -> RRGGBB
-            guard let r = UInt8(String(cleanedString[cleanedString.startIndex]), radix: 16),
-                let g = UInt8(
-                    String(cleanedString[cleanedString.index(cleanedString.startIndex, offsetBy: 1)]), radix: 16),
-                let b = UInt8(
-                    String(cleanedString[cleanedString.index(cleanedString.startIndex, offsetBy: 2)]), radix: 16)
+            let rs = cleanedString.prefix(1)
+            let gs = cleanedString.dropFirst().prefix(1)
+            let bs = cleanedString.dropFirst(2).prefix(1)
+
+            guard let r = UInt8(rs, radix: 16),
+                let g = UInt8(gs, radix: 16),
+                let b = UInt8(bs, radix: 16)
             else {
                 return nil
             }
@@ -98,13 +100,13 @@ extension RGBColor<UInt8> {
 
         case 6:
             // 6-character format: RRGGBB
-            let rString = String(cleanedString.prefix(2))
-            let gString = String(cleanedString.dropFirst(2).prefix(2))
-            let bString = String(cleanedString.dropFirst(4).prefix(2))
+            let rs = String(cleanedString.prefix(2))
+            let gs = String(cleanedString.dropFirst(2).prefix(2))
+            let bs = String(cleanedString.dropFirst(4).prefix(2))
 
-            guard let r = UInt8(rString, radix: 16),
-                let g = UInt8(gString, radix: 16),
-                let b = UInt8(bString, radix: 16)
+            guard let r = UInt8(rs, radix: 16),
+                let g = UInt8(gs, radix: 16),
+                let b = UInt8(bs, radix: 16)
             else {
                 return nil
             }
