@@ -49,3 +49,10 @@ terminal.writeCodes([
 - Terminal progress bar (OSC 9)
 
 [tui-fuzzy-finder]: https://github.com/juri/tui-fuzzy-finder/
+
+## Documentation
+
+[Documentation] and `Package.swift` snippets are available at [Swift Package Index].
+
+[Documentation]: https://swiftpackageindex.com/juri/terminal-ansi/documentation/terminalstyles
+[Swift Package Index]: https://swiftpackageindex.com/juri/terminal-ansi
