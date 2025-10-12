@@ -126,7 +126,7 @@ let oscTimeout = Duration.seconds(5)
 // Helper function to wait for data with timeout using select
 func waitForData(fileDescriptor: Int32, timeout: Duration) throws(ColorReadFailure) {
     let timeoutSeconds = timeout.components.seconds
-    let timeoutMicroseconds = Int32(timeout.components.attoseconds / 1_000_000_000_000)
+    let timeoutMicroseconds = suseconds_t(timeout.components.attoseconds / 1_000_000_000_000)
 
     var tv = timeval(tv_sec: Int(timeoutSeconds), tv_usec: timeoutMicroseconds)
 
