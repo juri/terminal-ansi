@@ -136,7 +136,7 @@ func waitForData(fileDescriptor: Int32, timeout: Duration) throws(ColorReadFailu
     fd_setter(fileDescriptor, &readfds)
 
     while true {
-        let result = Darwin.select(fileDescriptor + 1, &readfds, nil, nil, &tv)
+        let result = select(fileDescriptor + 1, &readfds, nil, nil, &tv)
 
         if result == -1 {
             let error = errno
