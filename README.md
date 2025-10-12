@@ -54,5 +54,5 @@ terminal.writeCodes([
 
 [Documentation] and `Package.swift` snippets are available at [Swift Package Index].
 
-[Documentation]: https://swiftpackageindex.com/juri/terminal-ansi/documentation/terminalstyles
+[Documentation]: https://swiftpackageindex.com/juri/terminal-ansi/documentation/terminalansi
 [Swift Package Index]: https://swiftpackageindex.com/juri/terminal-ansi
