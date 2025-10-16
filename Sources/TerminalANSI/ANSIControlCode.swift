@@ -139,6 +139,7 @@ public enum SetGraphicsRendition: Equatable, Sendable {
     case textBasicBright(BasicPalette)
     case textRGB(RGBColor8)
     case underline
+    case doubleUnderline
 
     public var rawValue: String {
         switch self {
@@ -154,6 +155,7 @@ public enum SetGraphicsRendition: Equatable, Sendable {
         case .overline: return "53"
         case .reverse: return "7"
         case .underline: return "4"
+        case .doubleUnderline: return "21"
         case let .text256(index): return "38;5;\(index)"
         case let .textBasic(p): return String(describing: 30 + p.rawValue)
         case let .textBasicBright(p): return String(describing: 90 + p.rawValue)
