@@ -167,8 +167,11 @@ public enum SetGraphicsRendition: Equatable, Sendable {
 
 /// `OperatingSystemCommand` defines the OSC control codes.
 public enum OperatingSystemCommand: Equatable, Sendable {
+    /// OSC 8
     case link(id: String?, target: String, title: String)
+    /// OSC 9
     case setProgress(OSCProgress)
+    /// OSC 0
     case setTitle(String)
 
     public var rawValue: String {
