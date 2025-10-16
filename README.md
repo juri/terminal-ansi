@@ -45,6 +45,7 @@ terminal.writeCodes([
 - Convert color to and from HSL
 - Cursor movements, alternative buffer, erasing contents
 - Colors, text styles
+- Title (OSC 0)
 - Hyperlinks (OSC 8)
 - Terminal progress bar (OSC 9)
 

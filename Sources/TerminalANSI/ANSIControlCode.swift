@@ -169,6 +169,7 @@ public enum SetGraphicsRendition: Equatable, Sendable {
 public enum OperatingSystemCommand: Equatable, Sendable {
     case link(id: String?, target: String, title: String)
     case setProgress(OSCProgress)
+    case setTitle(String)
 
     public var rawValue: String {
         let suffix = Codes.st
@@ -184,6 +185,8 @@ public enum OperatingSystemCommand: Equatable, Sendable {
             action = codes
 
         case let .setProgress(oscp): action = "9;" + oscp.rawValue
+
+        case let .setTitle(t): action = "0;\(t)"
         }
 
         return "]\(action)\(suffix)"
