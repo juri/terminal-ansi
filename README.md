@@ -48,6 +48,7 @@ terminal.writeCodes([
 - Title (OSC 0)
 - Hyperlinks (OSC 8)
 - Terminal progress bar (OSC 9)
+- Pointer shape (OSC 22)
 
 [tui-fuzzy-finder]: https://github.com/juri/tui-fuzzy-finder/
 

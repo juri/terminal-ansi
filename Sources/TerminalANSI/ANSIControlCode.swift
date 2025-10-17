@@ -169,6 +169,8 @@ public enum SetGraphicsRendition: Equatable, Sendable {
 public enum OperatingSystemCommand: Equatable, Sendable {
     /// OSC 8
     case link(id: String?, target: String, title: String)
+    /// OSC 22
+    case setPointerShape(OSCPointer)
     /// OSC 9
     case setProgress(OSCProgress)
     /// OSC 0
@@ -187,6 +189,9 @@ public enum OperatingSystemCommand: Equatable, Sendable {
             codes += ";\(target)\(Codes.st)\(title)\(Codes.esc)]8;;"
             action = codes
 
+        case let .setPointerShape(p):
+            action = "22;\(p)"
+
         case let .setProgress(oscp): action = "9;" + oscp.rawValue
 
         case let .setTitle(t): action = "0;\(t)"
@@ -194,6 +199,36 @@ public enum OperatingSystemCommand: Equatable, Sendable {
 
         return "]\(action)\(suffix)"
     }
+}
+
+/// Mouse pointer shapes to use with ``OperatingSystemCommand/setPointerShape(_:)``.
+///
+/// Valid names consist of `a-z0-9_-`.
+///
+/// The support for pointer shapes is extremely spotty. There's one constant shape defined, ``crosshair``, which
+/// seems to be somewhat common.
+public struct OSCPointer: Equatable, Sendable, LosslessStringConvertible {
+    public let rawValue: String
+
+    public init?(rawValue: String) {
+        guard
+            rawValue.allSatisfy(
+                { $0.isASCII && (($0.isLowercase && $0.isLetter) || $0.isNumber || $0 == "-" || $0 == "_") }
+            )
+        else {
+            return nil
+        }
+        self.rawValue = rawValue
+    }
+
+    public init?(_ description: String) {
+        self.init(rawValue: description)
+    }
+
+    public var description: String { self.rawValue }
+
+    /// Crosshair pointer.
+    public static let crosshair = OSCPointer("crosshair")!
 }
 
 /// `OSCProgress` is a OSC progress indicator.
