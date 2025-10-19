@@ -223,7 +223,7 @@ private func osc(_ code: OSCCode, message: String) -> String {
 ///
 /// The support for pointer shapes is extremely spotty. There's one constant shape defined, ``crosshair``, which
 /// seems to be somewhat common.
-public struct OSCPointer: Equatable, Sendable, LosslessStringConvertible {
+public struct OSCPointer: Hashable, Sendable, LosslessStringConvertible {
     public let rawValue: String
 
     public init?(rawValue: String) {
