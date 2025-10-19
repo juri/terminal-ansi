@@ -12,19 +12,35 @@ enum QueryColor: Int {
     case background = 11
 }
 
-func foregroundColor(fileHandle: FileHandle) throws(ColorReadFailure) -> RGBAColor<UInt16> {
+func foregroundColor(fileHandle: FileHandle) throws(TerminalReadFailure) -> RGBAColor<UInt16> {
     let report = try statusReport(fileHandle: fileHandle, queryColor: .foreground)
     let parsedColor = try parseTerminalColor(s: report)
     return parsedColor
 }
 
-func backgroundColor(fileHandle: FileHandle) throws(ColorReadFailure) -> RGBAColor<UInt16> {
+func backgroundColor(fileHandle: FileHandle) throws(TerminalReadFailure) -> RGBAColor<UInt16> {
     let report = try statusReport(fileHandle: fileHandle, queryColor: .background)
     let parsedColor = try parseTerminalColor(s: report)
     return parsedColor
 }
 
-enum ColorReadFailure: Error {
+func currentPointer(fileHandle: FileHandle) throws(TerminalReadFailure) -> OSCPointer {
+    let report = try oscQuery(fileHandle: fileHandle, query: OSCPointerShapeQuery.current.message)
+    var subr = report[...]
+    guard subr.hasPrefix(Codes.osc) else { throw .invalidTerminalResponse(report) }
+    subr = subr.dropFirst(Codes.osc.count)
+    guard subr.hasPrefix(OSCCode.pointer.description) else { throw .invalidTerminalResponse(report) }
+    subr = subr.dropFirst(OSCCode.pointer.description.count)
+    guard subr.hasPrefix(";") else { throw .invalidTerminalResponse(report) }
+    subr = subr.dropFirst(";".count)
+    guard subr.hasSuffix(Codes.st) else { throw .invalidTerminalResponse(report) }
+    subr = subr.dropLast(Codes.st.count)
+
+    guard let pointer = OSCPointer(rawValue: String(subr)) else { throw .invalidTerminalResponse(report) }
+    return pointer
+}
+
+enum TerminalReadFailure: Error {
     case errorInSelect(Int32)
     case invalidTerminalResponse(String)
     case notForeground
@@ -34,7 +50,7 @@ enum ColorReadFailure: Error {
     case unsupportedQuery
 }
 
-func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBAColor<UInt16> {
+func parseTerminalColor(s: String) throws(TerminalReadFailure) -> RGBAColor<UInt16> {
     var subs = s[...]
 
     if subs.hasSuffix(Codes.bel) {
@@ -44,28 +60,28 @@ func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBAColor<UInt16>
     } else if subs.hasSuffix(Codes.st) {
         subs = subs.dropLast(Codes.st.count)
     } else {
-        throw ColorReadFailure.invalidTerminalResponse(s)
+        throw TerminalReadFailure.invalidTerminalResponse(s)
     }
 
     subs = subs.dropFirst(4)
     if !subs.hasPrefix(";rgb:") {
-        throw ColorReadFailure.invalidTerminalResponse(s)
+        throw TerminalReadFailure.invalidTerminalResponse(s)
     }
     subs = subs.dropFirst(5)
     let components = subs.split(separator: "/")
     let componentCount = components.count
     if !(3...4).contains(componentCount) {
-        throw ColorReadFailure.invalidTerminalResponse(s)
+        throw TerminalReadFailure.invalidTerminalResponse(s)
     }
     var color = RGBAColor<UInt16>()
-    func parseComponent(_ component: Substring) throws(ColorReadFailure) -> RGBAColor<UInt16>.Component {
-        guard let i = UInt16(component, radix: 16) else { throw ColorReadFailure.invalidTerminalResponse(s) }
+    func parseComponent(_ component: Substring) throws(TerminalReadFailure) -> RGBAColor<UInt16>.Component {
+        guard let i = UInt16(component, radix: 16) else { throw TerminalReadFailure.invalidTerminalResponse(s) }
         switch component.count {
         case 1: return RGBAColor<UInt16>.Component(value4bit: i)
         case 2: return RGBAColor<UInt16>.Component(value8bit: i)
         case 3: return RGBAColor<UInt16>.Component(value4bit: i)
         case 4: return RGBAColor<UInt16>.Component(rawValue: i)
-        default: throw ColorReadFailure.invalidTerminalResponse(s)
+        default: throw TerminalReadFailure.invalidTerminalResponse(s)
         }
     }
     color.r = try parseComponent(components[0])
@@ -76,7 +92,7 @@ func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBAColor<UInt16>
     return color
 }
 
-func statusReport(fileHandle: FileHandle, queryColor: QueryColor) throws(ColorReadFailure) -> String {
+func statusReport(fileHandle: FileHandle, queryColor: QueryColor) throws(TerminalReadFailure) -> String {
     let response = try oscQuery(fileHandle: fileHandle, query: "\(Codes.osc)\(queryColor.rawValue);?\(Codes.st)")
     // OSC response format: "\x1b]11;rgb:RRRR/GGGG/BBBB\x1b\\"
     return response
@@ -84,7 +100,7 @@ func statusReport(fileHandle: FileHandle, queryColor: QueryColor) throws(ColorRe
 
 let oscTimeout = Duration.seconds(5)
 
-func oscQuery(fileHandle: FileHandle, query: String) throws(ColorReadFailure) -> String {
+func oscQuery(fileHandle: FileHandle, query: String) throws(TerminalReadFailure) -> String {
     let term = ProcessInfo.processInfo.environment["TERM"]
     if let term, term.hasPrefix("screen") || term.hasPrefix("tmux") || term.hasPrefix("dumb") {
         throw .terminalDoesntSupportStatusReporting
@@ -129,7 +145,7 @@ func oscQuery(fileHandle: FileHandle, query: String) throws(ColorReadFailure) ->
 }
 
 // Helper function to wait for data with timeout using select
-func waitForData(fileDescriptor: Int32, timeout: Duration) throws(ColorReadFailure) {
+func waitForData(fileDescriptor: Int32, timeout: Duration) throws(TerminalReadFailure) {
     let timeoutSeconds = timeout.components.seconds
     let timeoutMicroseconds = suseconds_t(timeout.components.attoseconds / 1_000_000_000_000)
 
@@ -160,7 +176,7 @@ func waitForData(fileDescriptor: Int32, timeout: Duration) throws(ColorReadFailu
 }
 
 // Helper function to read next byte with timeout
-func readNextByte(fileHandle: FileHandle, unsafe: Bool = false) throws(ColorReadFailure) -> UInt8 {
+func readNextByte(fileHandle: FileHandle, unsafe: Bool = false) throws(TerminalReadFailure) -> UInt8 {
     if !unsafe {
         try waitForData(fileDescriptor: fileHandle.fileDescriptor, timeout: oscTimeout)
     }
@@ -178,7 +194,7 @@ func readNextByte(fileHandle: FileHandle, unsafe: Bool = false) throws(ColorRead
     return data[0]
 }
 
-func readNextResponse(fileHandle: FileHandle) throws(ColorReadFailure) -> (response: String, isOSC: Bool) {
+func readNextResponse(fileHandle: FileHandle) throws(TerminalReadFailure) -> (response: String, isOSC: Bool) {
     let escStartByte = UInt8(Codes.esc.first!.asciiValue!)
     var start: UInt8
     repeat {
