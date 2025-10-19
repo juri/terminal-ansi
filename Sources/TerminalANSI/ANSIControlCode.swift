@@ -165,40 +165,56 @@ public enum SetGraphicsRendition: Equatable, Sendable {
     }
 }
 
+/// OSC codes.
+///
+/// See ``OperatingSystemCommand`` for commands you can issue. This type just holds the values
+/// used when constructing OSC commands.
+public enum OSCCode: Int, CustomStringConvertible {
+    case title = 0
+    case link = 8
+    case progress = 9
+    case pointer = 22
+
+    public var description: String {
+        String(self.rawValue)
+    }
+}
+
 /// `OperatingSystemCommand` defines the OSC control codes.
 public enum OperatingSystemCommand: Equatable, Sendable {
-    /// OSC 8
+    /// Create a link with ``OSCCode/link``.
     case link(id: String?, target: String, title: String)
-    /// OSC 22
+    /// Set mouse pointer shape with ``OSCCode/pointer``.
     case setPointerShape(OSCPointer)
-    /// OSC 9
+    /// Set terminal progress bar value with ``OSCCode/progress``.
     case setProgress(OSCProgress)
-    /// OSC 0
+    /// Set terminal title with ``OSCCode/title``.
     case setTitle(String)
 
     public var rawValue: String {
-        let suffix = Codes.st
-        let action: String
-
         switch self {
         case let .link(id: id, target: target, title: title):
-            var codes = "8;"
+            var message = ""
             if let id {
-                codes += "id=\(id)"
+                message += "id=\(id)"
             }
-            codes += ";\(target)\(Codes.st)\(title)\(Codes.esc)]8;;"
-            action = codes
+            message += ";\(target)\(Codes.st)\(title)\(Codes.esc)]8;;"
+            return osc(.link, message: message)
 
         case let .setPointerShape(p):
-            action = "22;\(p)"
+            return osc(.pointer, message: p.rawValue)
 
-        case let .setProgress(oscp): action = "9;" + oscp.rawValue
+        case let .setProgress(oscp):
+            return osc(.progress, message: oscp.rawValue)
 
-        case let .setTitle(t): action = "0;\(t)"
+        case let .setTitle(t):
+            return osc(.title, message: t)
         }
-
-        return "]\(action)\(suffix)"
     }
+}
+
+private func osc(_ code: OSCCode, message: String) -> String {
+    "\(Codes.osc)\(code.rawValue);\(message)\(Codes.st)"
 }
 
 /// Mouse pointer shapes to use with ``OperatingSystemCommand/setPointerShape(_:)``.
