@@ -78,6 +78,14 @@ func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBAColor<UInt16>
 }
 
 func statusReport(fileHandle: FileHandle, queryColor: QueryColor) throws(ColorReadFailure) -> String {
+    let response = try oscQuery(fileHandle: fileHandle, query: "\(Codes.osc)\(queryColor.rawValue);?\(Codes.st)")
+    // OSC response format: "\x1b]11;rgb:RRRR/GGGG/BBBB\x1b\\"
+    return response
+}
+
+let oscTimeout = Duration.seconds(5)
+
+func oscQuery(fileHandle: FileHandle, query: String) throws(ColorReadFailure) -> String {
     let term = ProcessInfo.processInfo.environment["TERM"]
     if let term, term.hasPrefix("screen") || term.hasPrefix("tmux") || term.hasPrefix("dumb") {
         throw .terminalDoesntSupportStatusReporting
@@ -103,7 +111,7 @@ func statusReport(fileHandle: FileHandle, queryColor: QueryColor) throws(ColorRe
     tcsetattr(fileHandle.fileDescriptor, TCSAFLUSH, &noEcho)
 
     // first, send OSC query, which is ignored by terminal which do not support it
-    try? fileHandle.write(contentsOf: Data("\(Codes.osc)\(queryColor.rawValue);?\(Codes.st)".utf8))
+    try? fileHandle.write(contentsOf: Data(query.utf8))
 
     // then, query cursor position, should be supported by all terminals
     try? fileHandle.write(contentsOf: Data("\(Codes.csi)6n".utf8))
@@ -118,11 +126,8 @@ func statusReport(fileHandle: FileHandle, queryColor: QueryColor) throws(ColorRe
     // read the cursor query response next and discard the result
     _ = try readNextResponse(fileHandle: fileHandle)
 
-    // OSC response format: "\x1b]11;rgb:RRRR/GGGG/BBBB\x1b\\"
     return response
 }
-
-let oscTimeout = Duration.seconds(5)
 
 // Helper function to wait for data with timeout using select
 func waitForData(fileDescriptor: Int32, timeout: Duration) throws(ColorReadFailure) {
