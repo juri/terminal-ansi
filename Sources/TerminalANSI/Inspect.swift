@@ -32,6 +32,7 @@ enum ColorReadFailure: Error {
     case tcgetattrFailure
     case terminalDoesntSupportStatusReporting
     case terminalResponseReadFailure
+    case unsupportedQuery
 }
 
 func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBAColor<UInt16> {
@@ -111,7 +112,7 @@ func statusReport(fileHandle: FileHandle, queryColor: QueryColor) throws(ColorRe
 
     // if this is not OSC response, then the terminal does not support it
     guard isOSC else {
-        throw .invalidTerminalResponse(response)
+        throw .unsupportedQuery
     }
 
     // read the cursor query response next and discard the result
