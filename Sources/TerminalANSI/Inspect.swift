@@ -27,7 +27,6 @@ func backgroundColor(fileHandle: FileHandle) throws(ColorReadFailure) -> RGBACol
 enum ColorReadFailure: Error {
     case errorInSelect(Int32)
     case invalidTerminalResponse(String)
-    case invalidStatusForColorRead(String)
     case notForeground
     case tcgetattrFailure
     case terminalDoesntSupportStatusReporting
@@ -45,28 +44,28 @@ func parseTerminalColor(s: String) throws(ColorReadFailure) -> RGBAColor<UInt16>
     } else if subs.hasSuffix(Codes.st) {
         subs = subs.dropLast(Codes.st.count)
     } else {
-        throw ColorReadFailure.invalidStatusForColorRead(s)
+        throw ColorReadFailure.invalidTerminalResponse(s)
     }
 
     subs = subs.dropFirst(4)
     if !subs.hasPrefix(";rgb:") {
-        throw ColorReadFailure.invalidStatusForColorRead(s)
+        throw ColorReadFailure.invalidTerminalResponse(s)
     }
     subs = subs.dropFirst(5)
     let components = subs.split(separator: "/")
     let componentCount = components.count
     if !(3...4).contains(componentCount) {
-        throw ColorReadFailure.invalidStatusForColorRead(s)
+        throw ColorReadFailure.invalidTerminalResponse(s)
     }
     var color = RGBAColor<UInt16>()
     func parseComponent(_ component: Substring) throws(ColorReadFailure) -> RGBAColor<UInt16>.Component {
-        guard let i = UInt16(component, radix: 16) else { throw ColorReadFailure.invalidStatusForColorRead(s) }
+        guard let i = UInt16(component, radix: 16) else { throw ColorReadFailure.invalidTerminalResponse(s) }
         switch component.count {
         case 1: return RGBAColor<UInt16>.Component(value4bit: i)
         case 2: return RGBAColor<UInt16>.Component(value8bit: i)
         case 3: return RGBAColor<UInt16>.Component(value4bit: i)
         case 4: return RGBAColor<UInt16>.Component(rawValue: i)
-        default: throw ColorReadFailure.invalidStatusForColorRead(s)
+        default: throw ColorReadFailure.invalidTerminalResponse(s)
         }
     }
     color.r = try parseComponent(components[0])
