@@ -12,18 +12,21 @@ enum QueryColor: Int {
     case background = 11
 }
 
+@MainActor
 func foregroundColor(fileHandle: FileHandle) throws(TerminalReadFailure) -> RGBAColor<UInt16> {
     let report = try statusReport(fileHandle: fileHandle, queryColor: .foreground)
     let parsedColor = try parseTerminalColor(s: report)
     return parsedColor
 }
 
+@MainActor
 func backgroundColor(fileHandle: FileHandle) throws(TerminalReadFailure) -> RGBAColor<UInt16> {
     let report = try statusReport(fileHandle: fileHandle, queryColor: .background)
     let parsedColor = try parseTerminalColor(s: report)
     return parsedColor
 }
 
+@MainActor
 func currentPointer(fileHandle: FileHandle) throws(TerminalReadFailure) -> OSCPointer {
     let report = try oscQuery(fileHandle: fileHandle, query: OSCPointerShapeQuery.current.message)
     var subr = report[...]
@@ -106,6 +109,7 @@ func parseTerminalColor(s: String) throws(TerminalReadFailure) -> RGBAColor<UInt
     return color
 }
 
+@MainActor
 func statusReport(fileHandle: FileHandle, queryColor: QueryColor) throws(TerminalReadFailure) -> String {
     let response = try oscQuery(fileHandle: fileHandle, query: "\(Codes.osc)\(queryColor.rawValue);?\(Codes.st)")
     // OSC response format: "\x1b]11;rgb:RRRR/GGGG/BBBB\x1b\\"
@@ -114,6 +118,7 @@ func statusReport(fileHandle: FileHandle, queryColor: QueryColor) throws(Termina
 
 let oscTimeout = Duration.seconds(5)
 
+@MainActor
 func oscQuery(fileHandle: FileHandle, query: String) throws(TerminalReadFailure) -> String {
     let term = ProcessInfo.processInfo.environment["TERM"]
     if let term, term.hasPrefix("screen") || term.hasPrefix("tmux") || term.hasPrefix("dumb") {
