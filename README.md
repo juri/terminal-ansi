@@ -39,8 +39,10 @@ terminal.writeCodes([
 
 ## Features
 
-- Query terminal background and foreground colors
-- Query terminal size
+- Queries:
+    - Terminal background and foreground colors
+    - Size
+    - Mouse pointer shapes
 - Parse color strings (`RGB`, `RRGGBB`, `RGBA`, `RRGGBBAA`, with or without leading `#`)
 - Convert color to and from HSL
 - Cursor movements, alternative buffer, erasing contents
