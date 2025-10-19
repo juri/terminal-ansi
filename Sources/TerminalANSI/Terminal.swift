@@ -53,7 +53,7 @@ public final class Terminal {
         try HSLColor(rgba: self.backgroundColor()).luminance < 0.5
     }
 
-    public func size() throws -> TerminalSize {
+    public func size() throws(TerminalReadFailure) -> TerminalSize {
         try TerminalSize.current(fileHandle: self.fileHandle)
     }
 }
