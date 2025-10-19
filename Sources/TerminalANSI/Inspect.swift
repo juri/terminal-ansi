@@ -45,17 +45,14 @@ func currentPointer(fileHandle: FileHandle) throws(TerminalReadFailure) -> OSCPo
 
 /// `TerminalReadFailure` is the error thrown when reading data from the terminal fails.
 public enum TerminalReadFailure: Error {
-    /// The `select` system call failed.
-    case errorInSelect(Int32)
+    /// A system call or function call failed.
+    case callFailure(CallName, errno: Int32)
 
     /// Parsing a terminal response failed.
     case invalidTerminalResponse(String)
 
     /// The terminal is not in the foreground.
     case notForeground
-
-    /// The `tcgetattr` function failed.
-    case tcgetattrFailure
 
     /// The current terminal is one we know not to support status reporting.
     case terminalDoesntSupportStatusReporting
@@ -65,6 +62,12 @@ public enum TerminalReadFailure: Error {
 
     /// The terminal doesn't recognize the OSC query that was issued.
     case unsupportedQuery
+
+    public enum CallName: Sendable {
+        case ioctl
+        case select
+        case tcgetattr
+    }
 }
 
 func parseTerminalColor(s: String) throws(TerminalReadFailure) -> RGBAColor<UInt16> {
@@ -131,7 +134,7 @@ func oscQuery(fileHandle: FileHandle, query: String) throws(TerminalReadFailure)
 
     var originalTermios = termios()
     if tcgetattr(fileHandle.fileDescriptor, &originalTermios) == -1 {
-        throw .tcgetattrFailure
+        throw .callFailure(.tcgetattr, errno: errno)
     }
 
     defer {
@@ -183,7 +186,7 @@ func waitForData(fileDescriptor: Int32, timeout: Duration) throws(TerminalReadFa
             if error == EINTR {
                 continue  // Interrupted by signal, retry
             }
-            throw .errorInSelect(error)
+            throw .callFailure(.select, errno: error)
         }
 
         if result == 0 {
