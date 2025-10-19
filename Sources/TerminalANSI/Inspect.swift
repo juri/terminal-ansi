@@ -30,12 +30,9 @@ func backgroundColor(fileHandle: FileHandle) throws(TerminalReadFailure) -> RGBA
 func currentPointer(fileHandle: FileHandle) throws(TerminalReadFailure) -> OSCPointer {
     let report = try oscQuery(fileHandle: fileHandle, query: OSCPointerShapeQuery.current.message)
     var subr = report[...]
-    guard subr.hasPrefix(Codes.osc) else { throw .invalidTerminalResponse(report) }
-    subr = subr.dropFirst(Codes.osc.count)
-    guard subr.hasPrefix(OSCCode.pointer.description) else { throw .invalidTerminalResponse(report) }
-    subr = subr.dropFirst(OSCCode.pointer.description.count)
-    guard subr.hasPrefix(";") else { throw .invalidTerminalResponse(report) }
-    subr = subr.dropFirst(";".count)
+    let prefix = "\(Codes.osc)\(OSCCode.pointer.description);"
+    guard subr.hasPrefix(prefix) else { throw .invalidTerminalResponse(report) }
+    subr = subr.dropFirst(prefix.count)
     guard subr.hasSuffix(Codes.st) else { throw .invalidTerminalResponse(report) }
     subr = subr.dropLast(Codes.st.count)
 
@@ -50,12 +47,9 @@ func supportedPointers(
 ) throws(TerminalReadFailure) -> [OSCPointer: Bool] {
     let report = try oscQuery(fileHandle: fileHandle, query: OSCPointerShapeQuery.pointers(pointers).message)
     var subr = report[...]
-    guard subr.hasPrefix(Codes.osc) else { throw .invalidTerminalResponse(report) }
-    subr = subr.dropFirst(Codes.osc.count)
-    guard subr.hasPrefix(OSCCode.pointer.description) else { throw .invalidTerminalResponse(report) }
-    subr = subr.dropFirst(OSCCode.pointer.description.count)
-    guard subr.hasPrefix(";") else { throw .invalidTerminalResponse(report) }
-    subr = subr.dropFirst(";".count)
+    let prefix = "\(Codes.osc)\(OSCCode.pointer.description);"
+    guard subr.hasPrefix(prefix) else { throw .invalidTerminalResponse(report) }
+    subr = subr.dropFirst(prefix.count)
     guard subr.hasSuffix(Codes.st) else { throw .invalidTerminalResponse(report) }
     subr = subr.dropLast(Codes.st.count)
 
