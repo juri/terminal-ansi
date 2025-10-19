@@ -184,6 +184,10 @@ public enum OSCCode: Int, CustomStringConvertible {
 public enum OperatingSystemCommand: Equatable, Sendable {
     /// Create a link with ``OSCCode/link``.
     case link(id: String?, target: String, title: String)
+    /// Pop mouse pointer shape off the pointer stack with ``OSCCode/pointer``.
+    case popPointerShape
+    /// Push mouse pointer shape on the pointer stack with ``OSCCode/pointer``.
+    case pushPointerShape(OSCPointer)
     /// Set mouse pointer shape with ``OSCCode/pointer``.
     case setPointerShape(OSCPointer)
     /// Set terminal progress bar value with ``OSCCode/progress``.
@@ -200,6 +204,12 @@ public enum OperatingSystemCommand: Equatable, Sendable {
             }
             message += ";\(target)\(Codes.st)\(title)\(Codes.esc)]8;;"
             return osc(.link, message: message)
+
+        case .popPointerShape:
+            return osc(.pointer, message: "<")
+
+        case let .pushPointerShape(p):
+            return osc(.pointer, message: ">\(p)")
 
         case let .setPointerShape(p):
             return osc(.pointer, message: p.rawValue)
