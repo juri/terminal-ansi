@@ -43,6 +43,36 @@ func currentPointer(fileHandle: FileHandle) throws(TerminalReadFailure) -> OSCPo
     return pointer
 }
 
+@MainActor
+func supportedPointers(
+    fileHandle: FileHandle,
+    pointers: [OSCPointer],
+) throws(TerminalReadFailure) -> [OSCPointer: Bool] {
+    let report = try oscQuery(fileHandle: fileHandle, query: OSCPointerShapeQuery.pointers(pointers).message)
+    var subr = report[...]
+    guard subr.hasPrefix(Codes.osc) else { throw .invalidTerminalResponse(report) }
+    subr = subr.dropFirst(Codes.osc.count)
+    guard subr.hasPrefix(OSCCode.pointer.description) else { throw .invalidTerminalResponse(report) }
+    subr = subr.dropFirst(OSCCode.pointer.description.count)
+    guard subr.hasPrefix(";") else { throw .invalidTerminalResponse(report) }
+    subr = subr.dropFirst(";".count)
+    guard subr.hasSuffix(Codes.st) else { throw .invalidTerminalResponse(report) }
+    subr = subr.dropLast(Codes.st.count)
+
+    let results = try subr.split(separator: ",").map { num throws(TerminalReadFailure) -> Bool in
+        switch num {
+        case "0": false
+        case "1": true
+        default: throw TerminalReadFailure.invalidTerminalResponse(report)
+        }
+    }
+    guard results.count == pointers.count else {
+        throw TerminalReadFailure.invalidTerminalResponse(report)
+    }
+
+    return Dictionary(zip(pointers, results), uniquingKeysWith: { $1 })
+}
+
 /// `TerminalReadFailure` is the error thrown when reading data from the terminal fails.
 public enum TerminalReadFailure: Error {
     /// A system call or function call failed.

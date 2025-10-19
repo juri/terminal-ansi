@@ -213,6 +213,25 @@ public enum OperatingSystemCommand: Equatable, Sendable {
     }
 }
 
+/// OSC pointer shape queries. This type can be used to construct queries related to mouse pointer shape.
+public enum OSCPointerShapeQuery: Equatable, Sendable {
+    /// Query the current mouse pointer shape.
+    case current
+
+    /// Query which of the listed pointers is supported.
+    case pointers([OSCPointer])
+
+    var message: String {
+        switch self {
+        case .current:
+            osc(.pointer, message: "?__current__")
+
+        case let .pointers(pointers):
+            osc(.pointer, message: "?" + pointers.map(String.init).joined(separator: ","))
+        }
+    }
+}
+
 private func osc(_ code: OSCCode, message: String) -> String {
     "\(Codes.osc)\(code.rawValue);\(message)\(Codes.st)"
 }

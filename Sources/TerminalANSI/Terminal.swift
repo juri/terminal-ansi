@@ -56,4 +56,12 @@ public final class Terminal {
     public func size() throws(TerminalReadFailure) -> TerminalSize {
         try TerminalSize.current(fileHandle: self.fileHandle)
     }
+
+    public func currentPointer() throws(TerminalReadFailure) -> OSCPointer {
+        try TerminalANSI.currentPointer(fileHandle: self.fileHandle)
+    }
+
+    public func supportedPointers(_ pointers: [OSCPointer]) throws(TerminalReadFailure) -> [OSCPointer: Bool] {
+        try TerminalANSI.supportedPointers(fileHandle: self.fileHandle, pointers: pointers)
+    }
 }
