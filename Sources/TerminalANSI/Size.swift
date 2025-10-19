@@ -10,19 +10,15 @@ import Foundation
 public struct TerminalSize: Sendable, Equatable {
     public var height: Int
     public var width: Int
-
-    struct IOCTLError: Error {
-        var errno: Int32
-    }
 }
 
 extension TerminalSize {
     /// Return the current terminal size.
     @MainActor
-    public static func current(fileHandle: FileHandle) throws -> Self {
+    public static func current(fileHandle: FileHandle) throws(TerminalReadFailure) -> Self {
         var w = winsize()
         guard ioctl(fileHandle.fileDescriptor, UInt(TIOCGWINSZ), &w) >= 0 else {
-            throw IOCTLError(errno: errno)
+            throw .callFailure(.ioctl, errno: errno)
         }
         return TerminalSize(height: Int(w.ws_row), width: Int(w.ws_col))
     }
