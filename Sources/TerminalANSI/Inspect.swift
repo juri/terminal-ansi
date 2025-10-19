@@ -40,13 +40,27 @@ func currentPointer(fileHandle: FileHandle) throws(TerminalReadFailure) -> OSCPo
     return pointer
 }
 
-enum TerminalReadFailure: Error {
+/// `TerminalReadFailure` is the error thrown when reading data from the terminal fails.
+public enum TerminalReadFailure: Error {
+    /// The `select` system call failed.
     case errorInSelect(Int32)
+
+    /// Parsing a terminal response failed.
     case invalidTerminalResponse(String)
+
+    /// The terminal is not in the foreground.
     case notForeground
+
+    /// The `tcgetattr` function failed.
     case tcgetattrFailure
+
+    /// The current terminal is one we know not to support status reporting.
     case terminalDoesntSupportStatusReporting
+
+    /// Reading a response from the terminal failed.
     case terminalResponseReadFailure
+
+    /// The terminal doesn't recognize the OSC query that was issued.
     case unsupportedQuery
 }
 

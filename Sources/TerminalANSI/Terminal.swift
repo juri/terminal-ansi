@@ -41,15 +41,15 @@ public final class Terminal {
         self.write(codes.map(\.ansiCommand.message))
     }
 
-    public func foregroundColor() throws -> RGBAColor<UInt16> {
+    public func foregroundColor() throws(TerminalReadFailure) -> RGBAColor<UInt16> {
         try TerminalANSI.foregroundColor(fileHandle: self.fileHandle)
     }
 
-    public func backgroundColor() throws -> RGBAColor<UInt16> {
+    public func backgroundColor() throws(TerminalReadFailure) -> RGBAColor<UInt16> {
         try TerminalANSI.backgroundColor(fileHandle: self.fileHandle)
     }
 
-    public func hasDarkBackground() throws -> Bool {
+    public func hasDarkBackground() throws(TerminalReadFailure) -> Bool {
         try HSLColor(rgba: self.backgroundColor()).luminance < 0.5
     }
 
