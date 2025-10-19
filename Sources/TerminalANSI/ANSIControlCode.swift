@@ -66,7 +66,7 @@ public enum ANSIControlCode: Equatable, Sendable {
         case let .moveCursorUp(n: n):
             return n >= 0 ? ANSICommand(rawValue: "[\(n)A") : ANSICommand(rawValue: "[\(abs(n))B")
 
-        case let .operatingSystemCommand(osc): return ANSICommand(rawValue: osc.rawValue)
+        case let .operatingSystemCommand(osc): return ANSICommand(rawValue: osc.rawValue, escape: false)
 
         case .reset: return ANSICommand(rawValue: "c")
         case .restoreCursorPosition: return ANSICommand(rawValue: "8")
