@@ -7,8 +7,12 @@
 
 import Foundation
 
+/// Terminal size in characters.
 public struct TerminalSize: Sendable, Equatable {
+    /// Height of a terminal, as the number of text lines in the window.
     public var height: Int
+
+    /// Width of a terminal, as the number of text columns in the window.
     public var width: Int
 }
 
