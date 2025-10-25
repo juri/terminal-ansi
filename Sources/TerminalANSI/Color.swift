@@ -72,7 +72,7 @@ extension RGBColor<UInt8> {
     /// Supports both 3-character (`#RGB` or `RGB`) and 6-character (`#RRGGBB` or `RRGGBB`) formats.
     /// The leading `#` is optional.
     ///
-    /// - Parameter hexString: A hex color string (e.g., "#FF0000", "FF0000", "#F00", "F00")
+    /// - Parameter hexString: A hex color string (e.g., `"#FF0000"`, `"FF0000"`, `"#F00"`, `"F00"`)
     /// - Returns: A `RGBColor<UInt8>` if parsing succeeds, `nil` otherwise
     public init?(hexString: String) {
         let cleanedString = hexString.hasPrefix("#") ? String(hexString.dropFirst()) : hexString
