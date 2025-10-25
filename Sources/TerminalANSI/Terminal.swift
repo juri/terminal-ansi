@@ -9,9 +9,11 @@ import Foundation
 /// `Terminal` wraps a TTY.
 @MainActor
 public final class Terminal {
+    let environment: [String: String]
+
     private let fileHandle: FileHandle
 
-    /// Opens TTY and if it succeeds and the device is a TTY, returns a non-nil instance.
+    /// Opens TTY and if it succeeds and the device is a TTY, returns a non-nil instance. Uses the current environment.
     public convenience init?() {
         guard let outTTYHandle = FileHandle(forUpdatingAtPath: "/dev/tty") else {
             return nil
@@ -19,8 +21,18 @@ public final class Terminal {
         self.init(fileHandle: outTTYHandle)
     }
 
-    public init?(fileHandle: FileHandle) {
+    /// Create a `Terminal` for `environment` and `fileHandle`.
+    ///
+    /// - Parameters:
+    ///     - environment: Environment variables. If nil, the current process environment is used.
+    ///     - fileHandle: A `FileHandle` representing the terminal. If it's a TTY, nil is returned.
+    /// - Returns: A Terminal if `fileHandle` is a TTY, otherwise nil.
+    public init?(
+        environment: [String: String]? = nil,
+        fileHandle: FileHandle
+    ) {
         guard isatty(fileHandle.fileDescriptor) == 1 else { return nil }
+        self.environment = environment ?? ProcessInfo.processInfo.environment
         self.fileHandle = fileHandle
     }
 
@@ -80,5 +92,10 @@ public final class Terminal {
     ///           indicates your terminal does not support a mouse pointer query.
     public func supportedPointers(_ pointers: [OSCPointer]) throws(TerminalReadFailure) -> [OSCPointer: Bool] {
         try TerminalANSI.supportedPointers(fileHandle: self.fileHandle, pointers: pointers)
+    }
+
+    /// A `ColorMode` that should tell which colors are safe to use with this terminal.
+    public var colorMode: ColorMode {
+        ColorMode.current(environment: self.environment, fileHandle: self.fileHandle)
     }
 }
