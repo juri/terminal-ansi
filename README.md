@@ -7,9 +7,10 @@
 
 This is a Swift package for outputting terminal ANSI control codes and inspecting the current terminal. It has been extracted and expanded from [tui-fuzzy-finder].
 
-The goal of `terminal-ansi` is to provide basic low-level support for styling terminal output. For higher-level tooling, you could take a look at [terminal-styles].
+The goal of `terminal-ansi` is to provide basic low-level support for styling terminal output. For higher-level tooling, you could take a look at [terminal-styles] and [terminal-widgets].
 
 [terminal-styles]: https://github.com/juri/terminal-styles
+[terminal-widgets]: https://github.com/juri/terminal-widgets
 
 ## Usage
 
