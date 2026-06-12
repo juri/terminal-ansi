@@ -39,5 +39,5 @@ let package = Package(
                 .product(name: "Numerics", package: "swift-numerics"),
             ],
         ),
-    ]
+    ],
 )

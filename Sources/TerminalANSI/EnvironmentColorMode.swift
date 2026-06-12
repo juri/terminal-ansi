@@ -47,7 +47,7 @@ public enum EnvironmentColorMode {
     /// - Parameter fileHandle: The output device.
     /// - Returns: true if `fileHandle` is a TTY and the value isn't ``EnvironmentColorMode/disable``.
     public func shouldUseColorIfPossible(
-        fileHandle: FileHandle,
+        fileHandle: FileHandle
     ) -> Bool {
         switch self {
         case .disable:

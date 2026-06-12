@@ -29,7 +29,7 @@ public final class Terminal {
     /// - Returns: A Terminal if `fileHandle` is a TTY, otherwise nil.
     public init?(
         environment: [String: String]? = nil,
-        fileHandle: FileHandle
+        fileHandle: FileHandle,
     ) {
         guard isatty(fileHandle.fileDescriptor) == 1 else { return nil }
         self.environment = environment ?? ProcessInfo.processInfo.environment

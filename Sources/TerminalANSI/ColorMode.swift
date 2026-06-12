@@ -32,7 +32,7 @@ public enum ColorMode: Sendable {
     ///     - environment: Environment variables.
     /// - Returns: A `ColorMode` that should tell which colors are safe to use.
     public static func current(
-        environment env: [String: String],
+        environment env: [String: String]
     ) -> ColorMode {
         // The following logic is shamelessly copied from
         // https://github.com/muesli/termenv/blob/368a3572b8146cc038b3f240da6792003d7e42c5/termenv_unix.go#L23

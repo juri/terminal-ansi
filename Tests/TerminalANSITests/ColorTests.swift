@@ -25,7 +25,7 @@ import Testing
         let result = input.scaledTo8
         #expect(
             result == expected,
-            "Scaling failure, input: \(hex(input.rawValue, width: 4)), expected: \(hex(expected.rawValue, width: 2)), actual: \(hex(result.rawValue, width: 2))"
+            "Scaling failure, input: \(hex(input.rawValue, width: 4)), expected: \(hex(expected.rawValue, width: 2)), actual: \(hex(result.rawValue, width: 2))",
         )
     }
 
@@ -38,7 +38,7 @@ import Testing
         let result = RGBAColor16.Component(value4bit: input)
         #expect(
             result == RGBAColor16.Component(rawValue: expected),
-            "Creation failure, input: \(hex(input, width: 1)), expected: \(hex(expected, width: 4)), actual: \(hex(result.rawValue, width: 4))"
+            "Creation failure, input: \(hex(input, width: 1)), expected: \(hex(expected, width: 4)), actual: \(hex(result.rawValue, width: 4))",
         )
     }
 
@@ -52,7 +52,7 @@ import Testing
         let result = RGBAColor16.Component(value8bit: input)
         #expect(
             result == RGBAColor16.Component(rawValue: expected),
-            "Creation failure, input: \(hex(input, width: 1)), expected: \(hex(expected, width: 4)), actual: \(hex(result.rawValue, width: 4))"
+            "Creation failure, input: \(hex(input, width: 1)), expected: \(hex(expected, width: 4)), actual: \(hex(result.rawValue, width: 4))",
         )
     }
 
@@ -66,7 +66,7 @@ import Testing
         let result = RGBAColor16.Component(value12bit: input)
         #expect(
             result == RGBAColor16.Component(rawValue: expected),
-            "Creation failure, input: \(hex(input, width: 1)), expected: \(hex(expected, width: 4)), actual: \(hex(result.rawValue, width: 4))"
+            "Creation failure, input: \(hex(input, width: 1)), expected: \(hex(expected, width: 4)), actual: \(hex(result.rawValue, width: 4))",
         )
     }
 
@@ -99,7 +99,7 @@ import Testing
         let comp = RGBAColor16.Component(percentage: value)
         #expect(
             comp.rawValue == expected,
-            "Conversion failure, value: \(value), expected: \(hex(expected, width: 4)), actual: \(hex(comp.rawValue, width: 4))"
+            "Conversion failure, value: \(value), expected: \(hex(expected, width: 4)), actual: \(hex(comp.rawValue, width: 4))",
         )
     }
 
@@ -113,15 +113,15 @@ import Testing
         let result = HSLColor(red: red, green: green, blue: blue)
         #expect(
             result.hue.isApproximatelyEqual(to: hsl.hue, absoluteTolerance: 0.001),
-            "Bad hue: \(result.hue), expected: \(hsl.hue)"
+            "Bad hue: \(result.hue), expected: \(hsl.hue)",
         )
         #expect(
             result.saturation.isApproximatelyEqual(to: hsl.saturation, absoluteTolerance: 0.001),
-            "Bad saturation: \(result.saturation), expected: \(hsl.saturation)"
+            "Bad saturation: \(result.saturation), expected: \(hsl.saturation)",
         )
         #expect(
             result.luminance.isApproximatelyEqual(to: hsl.luminance, absoluteTolerance: 0.001),
-            "Bad luminance: \(result.luminance), expected: \(hsl.luminance)"
+            "Bad luminance: \(result.luminance), expected: \(hsl.luminance)",
         )
     }
 
