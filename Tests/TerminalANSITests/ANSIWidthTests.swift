@@ -62,7 +62,7 @@ import Testing
         _ stripped: String,
         _ width: Int,
     ) {
-        #expect(input.strippingANSISequences() == stripped, "strip failed for \(name)")
-        #expect(input.terminalDisplayWidth == width, "width failed for \(name)")
+        #expect(ANSIString.strippingANSISequences(input) == stripped, "strip failed for \(name)")
+        #expect(ANSIString.terminalDisplayWidth(input) == width, "width failed for \(name)")
     }
 }

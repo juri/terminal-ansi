@@ -28,14 +28,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-extension String {
+public enum ANSIString {
     /// Returns this string with ANSI control sequences removed.
     ///
     /// Printable text and C0/C1 control characters are preserved.
-    public func strippingANSISequences() -> String {
+    public static func strippingANSISequences(_ s: String) -> String {
         var parser = ANSIParser()
         var result = ""
-        for sequence in parser.parse(self) {
+        for sequence in parser.parse(s) {
             switch sequence {
             case let .print(string):
                 result += string
@@ -51,19 +51,21 @@ extension String {
     }
 
     /// The terminal display width of this string in cells, ignoring ANSI sequences.
-    public var terminalDisplayWidth: Int {
-        self.strippingANSISequences().terminalDisplayWidthWithoutANSI
+    public static func terminalDisplayWidth(_ s: String) -> Int {
+        strippingANSISequences(s).terminalDisplayWidthWithoutANSI
     }
+}
 
-    private var terminalDisplayWidthWithoutANSI: Int {
+private extension String {
+    var terminalDisplayWidthWithoutANSI: Int {
         self.reduce(into: 0) { width, character in
             width += character.terminalDisplayWidth
         }
     }
 }
 
-extension Character {
-    fileprivate var terminalDisplayWidth: Int {
+private extension Character {
+    var terminalDisplayWidth: Int {
         if self.isTerminalControlCharacter {
             return 0
         }
@@ -89,8 +91,8 @@ extension Character {
     }
 }
 
-extension Unicode.Scalar {
-    fileprivate var isTerminalZeroWidth: Bool {
+private extension Unicode.Scalar {
+    var isTerminalZeroWidth: Bool {
         self.value == 0x200d
             || (0xfe00...0xfe0f).contains(self.value)
             || (0xe0100...0xe01ef).contains(self.value)
@@ -99,14 +101,14 @@ extension Unicode.Scalar {
             || self.properties.generalCategory == .format
     }
 
-    fileprivate var isTerminalEmoji: Bool {
+    var isTerminalEmoji: Bool {
         self.properties.isEmojiPresentation
             || (0x1f1e6...0x1f1ff).contains(self.value)
             || (0x1f300...0x1faff).contains(self.value)
             || (0x2600...0x27bf).contains(self.value) && self.properties.isEmoji
     }
 
-    fileprivate var isTerminalWideScalar: Bool {
+    var isTerminalWideScalar: Bool {
         switch self.value {
         case 0x1100...0x115f,
             0x231a...0x231b,
