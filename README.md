@@ -5,7 +5,7 @@
 
 # terminal-ansi
 
-This is a Swift package for outputting terminal ANSI control codes and inspecting the current terminal. It has been extracted and expanded from [tui-fuzzy-finder]. It also includes an ANSI parser based on [Charmbracelet's parser][charmbracelet-parser].
+This is a Swift package for outputting terminal ANSI control codes and inspecting the current terminal. It has been extracted and expanded from [tui-fuzzy-finder]. It also includes an ANSI parser and word wrapping helpers based on [Charmbracelet's ANSI tools][charmbracelet-parser].
 
 [charmbracelet-parser]: https://github.com/charmbracelet/x/tree/main/ansi
 
@@ -55,6 +55,7 @@ terminal.writeCodes([
 - Hyperlinks (OSC 8)
 - Terminal progress bar (OSC 9)
 - Pointer shape (OSC 22)
+- ANSI string width counting, ANSI aware string wrapping
 
 [tui-fuzzy-finder]: https://github.com/juri/tui-fuzzy-finder/
 

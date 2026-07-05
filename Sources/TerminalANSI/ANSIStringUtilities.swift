@@ -56,7 +56,7 @@ public enum ANSIString {
     }
 }
 
-private extension String {
+extension String {
     var terminalDisplayWidthWithoutANSI: Int {
         self.reduce(into: 0) { width, character in
             width += character.terminalDisplayWidth
@@ -64,7 +64,7 @@ private extension String {
     }
 }
 
-private extension Character {
+extension Character {
     var terminalDisplayWidth: Int {
         if self.isTerminalControlCharacter {
             return 0
@@ -78,7 +78,7 @@ private extension Character {
         return 1
     }
 
-    private var isTerminalControlCharacter: Bool {
+    var isTerminalControlCharacter: Bool {
         self.unicodeScalars.allSatisfy { scalar in
             scalar.value < 0x20 || (scalar.value >= 0x7f && scalar.value < 0xa0)
         }
