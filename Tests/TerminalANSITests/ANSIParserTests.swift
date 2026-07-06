@@ -28,6 +28,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import Synchronization
 import TerminalANSI
 import Testing
 
@@ -172,6 +173,59 @@ import Testing
 
         parser.reset()
         #expect(parser.parse("\u{1b}_three\u{1b}\\").first == .apc(Array("three".utf8)))
+    }
+
+    @Test func `handler monitors parsed sequences`() {
+        let events: Mutex<[ANSISequence]> = .init([])
+        var parser = ANSIParser(
+            handler: ANSIParserHandler(
+                print: { p in events.withLock { $0.append(.print(p)) } },
+                execute: { p in events.withLock { $0.append(.execute(p)) } },
+                handleEscape: { p in events.withLock { $0.append(.escape(p)) } },
+                handleCSI: { p in events.withLock { $0.append(.csi(p)) } },
+                handleOSC: { p in events.withLock { $0.append(.osc(p)) } },
+                handleDCS: { p in events.withLock { $0.append(.dcs(p)) } },
+                handleSOS: { p in events.withLock { $0.append(.sos(p)) } },
+                handlePM: { p in events.withLock { $0.append(.pm(p)) } },
+                handleAPC: { p in events.withLock { $0.append(.apc(p)) } },
+            )
+        )
+
+        let sequences = parser.parse(
+            "A\n\u{1b}[31m\u{1b}]2;title\u{7}\u{1b}P1+qpayload\u{1b}\\\u{1b}Xone\u{1b}\\\u{1b}^two\u{1b}\\\u{1b}_three\u{1b}\\"
+        )
+
+        let collectedEvents = events.withLock { $0 }
+        #expect(collectedEvents == sequences)
+        #expect(collectedEvents.contains(.print("A")))
+        #expect(collectedEvents.contains(.execute(0x0a)))
+        #expect(
+            collectedEvents.contains(
+                .csi(
+                    ANSIControlSequence(
+                        finalByte: UInt8(ascii: "m"),
+                        parameters: [ANSIParameter(value: 31)],
+                    )
+                )
+            )
+        )
+        #expect(collectedEvents.contains(.osc(ANSIOSCSequence(command: 2, data: Array("2;title".utf8)))))
+        #expect(collectedEvents.contains(.sos(Array("one".utf8))))
+        #expect(collectedEvents.contains(.pm(Array("two".utf8))))
+        #expect(collectedEvents.contains(.apc(Array("three".utf8))))
+    }
+
+    @Test func `setHandler replaces the parser handler`() {
+        let prints: Mutex<[String]> = .init([])
+        var parser = ANSIParser()
+
+        parser.setHandler(ANSIParserHandler(print: { p in prints.withLock { $0.append(p) } }))
+        _ = parser.parse("Hi")
+
+        parser.setHandler(nil)
+        _ = parser.parse("!")
+
+        #expect(prints.withLock { $0 } == ["H", "i"])
     }
 
     @Test func `parameter helper returns default for missing and out of bounds`() {

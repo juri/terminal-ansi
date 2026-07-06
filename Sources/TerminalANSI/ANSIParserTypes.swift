@@ -50,6 +50,52 @@ public enum ANSISequence: Equatable, Sendable {
     case apc([UInt8])
 }
 
+/// Callback hooks for observing what ``ANSIParser`` encounters.
+///
+/// All callbacks are optional. Set only the sequence kinds you need to monitor.
+public struct ANSIParserHandler: Sendable {
+    /// Called when printable terminal text is encountered.
+    public var print: (@Sendable (String) -> Void)?
+    /// Called when a C0 or C1 control byte is encountered.
+    public var execute: (@Sendable (UInt8) -> Void)?
+    /// Called when an ESC sequence is encountered.
+    public var handleEscape: (@Sendable (ANSIEscapeSequence) -> Void)?
+    /// Called when a CSI sequence is encountered.
+    public var handleCSI: (@Sendable (ANSIControlSequence) -> Void)?
+    /// Called when an OSC sequence is encountered.
+    public var handleOSC: (@Sendable (ANSIOSCSequence) -> Void)?
+    /// Called when a DCS sequence is encountered.
+    public var handleDCS: (@Sendable (ANSIDCSSequence) -> Void)?
+    /// Called when a start-of-string sequence is encountered.
+    public var handleSOS: (@Sendable ([UInt8]) -> Void)?
+    /// Called when a privacy message sequence is encountered.
+    public var handlePM: (@Sendable ([UInt8]) -> Void)?
+    /// Called when an application program command sequence is encountered.
+    public var handleAPC: (@Sendable ([UInt8]) -> Void)?
+
+    public init(
+        print: (@Sendable (String) -> Void)? = nil,
+        execute: (@Sendable (UInt8) -> Void)? = nil,
+        handleEscape: (@Sendable (ANSIEscapeSequence) -> Void)? = nil,
+        handleCSI: (@Sendable (ANSIControlSequence) -> Void)? = nil,
+        handleOSC: (@Sendable (ANSIOSCSequence) -> Void)? = nil,
+        handleDCS: (@Sendable (ANSIDCSSequence) -> Void)? = nil,
+        handleSOS: (@Sendable ([UInt8]) -> Void)? = nil,
+        handlePM: (@Sendable ([UInt8]) -> Void)? = nil,
+        handleAPC: (@Sendable ([UInt8]) -> Void)? = nil,
+    ) {
+        self.print = print
+        self.execute = execute
+        self.handleEscape = handleEscape
+        self.handleCSI = handleCSI
+        self.handleOSC = handleOSC
+        self.handleDCS = handleDCS
+        self.handleSOS = handleSOS
+        self.handlePM = handlePM
+        self.handleAPC = handleAPC
+    }
+}
+
 /// Options for ``ANSIParser``.
 public struct ANSIParserOptions: Equatable, Sendable {
     /// Maximum number of CSI/DCS parameters to keep.

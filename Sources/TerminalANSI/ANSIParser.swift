@@ -31,6 +31,8 @@
 /// A streaming ANSI sequence parser.
 public struct ANSIParser: Sendable {
     public var options: ANSIParserOptions
+    /// Optional callbacks invoked whenever the parser completes a sequence.
+    public var handler: ANSIParserHandler?
 
     private var state: ANSIParserState = .ground
     private var parameters: [ANSIParameter] = []
@@ -40,9 +42,15 @@ public struct ANSIParser: Sendable {
     private var data: [UInt8] = []
     private var utf8Bytes: [UInt8] = []
 
-    public init(options: ANSIParserOptions = ANSIParserOptions()) {
+    public init(options: ANSIParserOptions = ANSIParserOptions(), handler: ANSIParserHandler? = nil) {
         self.options = options
+        self.handler = handler
         self.reset()
+    }
+
+    /// Sets the parser handler.
+    public mutating func setHandler(_ handler: ANSIParserHandler?) {
+        self.handler = handler
     }
 
     /// Resets the parser to its initial state.
@@ -124,9 +132,9 @@ public struct ANSIParser: Sendable {
         }
 
         guard let string = String(bytes: self.utf8Bytes, encoding: .utf8) else {
-            return .print(String(decoding: self.utf8Bytes, as: UTF8.self))
+            return self.emit(.print(String(decoding: self.utf8Bytes, as: UTF8.self)))
         }
-        return .print(string)
+        return self.emit(.print(string))
     }
 
     private mutating func perform(_ action: ANSIParserAction, byte: UInt8) -> ANSISequence? {
@@ -139,10 +147,10 @@ public struct ANSIParser: Sendable {
             return nil
 
         case .print:
-            return .print(String(UnicodeScalar(byte)))
+            return self.emit(.print(String(UnicodeScalar(byte))))
 
         case .execute:
-            return .execute(byte)
+            return self.emit(.execute(byte))
 
         case .prefix:
             self.prefixByte = byte
@@ -214,49 +222,79 @@ public struct ANSIParser: Sendable {
 
         switch self.state {
         case .csiEntry, .csiParam, .csiIntermediate:
-            return .csi(
-                ANSIControlSequence(
-                    finalByte: byte,
-                    prefixByte: self.prefixByte,
-                    intermediateByte: self.intermediateByte,
-                    parameters: parameters,
+            return self.emit(
+                .csi(
+                    ANSIControlSequence(
+                        finalByte: byte,
+                        prefixByte: self.prefixByte,
+                        intermediateByte: self.intermediateByte,
+                        parameters: parameters,
+                    )
                 )
             )
 
         case .escape, .escapeIntermediate:
-            return .escape(
-                ANSIEscapeSequence(
-                    finalByte: byte,
-                    intermediateByte: self.intermediateByte,
+            return self.emit(
+                .escape(
+                    ANSIEscapeSequence(
+                        finalByte: byte,
+                        intermediateByte: self.intermediateByte,
+                    )
                 )
             )
 
         case .dcsEntry, .dcsParam, .dcsIntermediate, .dcsString:
-            return .dcs(
-                ANSIDCSSequence(
-                    finalByte: self.finalByte ?? byte,
-                    prefixByte: self.prefixByte,
-                    intermediateByte: self.intermediateByte,
-                    parameters: parameters,
-                    data: data,
+            return self.emit(
+                .dcs(
+                    ANSIDCSSequence(
+                        finalByte: self.finalByte ?? byte,
+                        prefixByte: self.prefixByte,
+                        intermediateByte: self.intermediateByte,
+                        parameters: parameters,
+                        data: data,
+                    )
                 )
             )
 
         case .oscString:
-            return .osc(ANSIOSCSequence(command: self.oscCommand(data), data: data))
+            return self.emit(.osc(ANSIOSCSequence(command: self.oscCommand(data), data: data)))
 
         case .sosString:
-            return .sos(data)
+            return self.emit(.sos(data))
 
         case .pmString:
-            return .pm(data)
+            return self.emit(.pm(data))
 
         case .apcString:
-            return .apc(data)
+            return self.emit(.apc(data))
 
         default:
             return nil
         }
+    }
+
+    private func emit(_ sequence: ANSISequence) -> ANSISequence {
+        switch sequence {
+        case let .print(string):
+            self.handler?.print?(string)
+        case let .execute(byte):
+            self.handler?.execute?(byte)
+        case let .escape(sequence):
+            self.handler?.handleEscape?(sequence)
+        case let .csi(sequence):
+            self.handler?.handleCSI?(sequence)
+        case let .osc(sequence):
+            self.handler?.handleOSC?(sequence)
+        case let .dcs(sequence):
+            self.handler?.handleDCS?(sequence)
+        case let .sos(data):
+            self.handler?.handleSOS?(data)
+        case let .pm(data):
+            self.handler?.handlePM?(data)
+        case let .apc(data):
+            self.handler?.handleAPC?(data)
+        }
+        return sequence
     }
 
     private func dispatchedParameters() -> [ANSIParameter] {
