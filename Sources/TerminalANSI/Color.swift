@@ -371,6 +371,150 @@ public typealias RGBAColor16 = RGBAColor<UInt16>
 /// `RGBAColor8` is 8 bits per channel, range 0…255/FF.
 public typealias RGBAColor8 = RGBAColor<UInt8>
 
+/// A terminal color decoded from SGR color parameters.
+public enum Color: Equatable, Sendable {
+    /// The terminal should use an implementation-defined color.
+    case implementationDefined
+
+    /// A transparent color.
+    case transparent
+
+    /// A 24-bit RGB color.
+    case rgb(RGBColor8)
+
+    /// A 32-bit RGBA color.
+    case rgba(RGBAColor8)
+
+    /// One of the first eight indexed ANSI colors.
+    case indexed(BasicPalette)
+
+    /// One of the bright indexed ANSI colors.
+    case indexedBright(BasicPalette)
+
+    /// An indexed ANSI 256-color value outside the basic palette.
+    case indexed256(Int)
+}
+
+/// Decode a color from SGR color parameters.
+///
+/// This reads parameters beginning with the SGR color selector, such as `38`, `48`, or `58`.
+/// The consumed parameters are removed from `parameters` when decoding succeeds.
+public func readStyleColor(_ parameters: inout ArraySlice<ANSIParameter>) -> Color? {
+    let params = Array(parameters)
+    guard params.count >= 2 else { return nil }
+
+    let selector = params[0]
+    let colorType = params[1]
+    var consumedCount = 2
+
+    func parameter(_ index: Int, default defaultValue: Int = 0) -> Int {
+        params[index].value(default: defaultValue)
+    }
+
+    func colorParameters() -> (Int, Int, Int, Int)? {
+        switch true {
+        case selector.hasMore && colorType.hasMore && params.count > 8
+            && params[2].hasMore && params[3].hasMore && params[4].hasMore && params[5].hasMore
+            && params[6].hasMore && params[7].hasMore:
+            consumedCount += 7
+            return (parameter(3), parameter(4), parameter(5), parameter(6))
+
+        case selector.hasMore && colorType.hasMore && params.count > 7
+            && params[2].hasMore && params[3].hasMore && params[4].hasMore && params[5].hasMore
+            && params[6].hasMore:
+            consumedCount += 6
+            return (parameter(3), parameter(4), parameter(5), parameter(6))
+
+        case selector.hasMore && colorType.hasMore && params.count > 6
+            && params[2].hasMore && params[3].hasMore && params[4].hasMore && params[5].hasMore:
+            consumedCount += 5
+            return (parameter(3), parameter(4), parameter(5), parameter(6))
+
+        case selector.hasMore && colorType.hasMore && params.count > 5
+            && params[2].hasMore && params[3].hasMore && params[4].hasMore && !params[5].hasMore:
+            consumedCount += 4
+            return (parameter(3), parameter(4), parameter(5), -1)
+
+        // The format config specifies NoCasesWithOnlyFallthrough, but in this cases the
+        // fallthrough is just way more readable than using comma.
+        // swift-format-ignore
+        case selector.hasMore && colorType.hasMore && parameter(1) == 2 && params.count > 4
+            && params[2].hasMore && params[3].hasMore && !params[4].hasMore:
+            fallthrough
+
+        case !selector.hasMore && !colorType.hasMore && parameter(1) == 2 && params.count > 4
+            && !params[2].hasMore && !params[3].hasMore && !params[4].hasMore:
+            consumedCount += 3
+            return (parameter(2), parameter(3), parameter(4), -1)
+
+        default:
+            return nil
+        }
+    }
+
+    func component(_ value: Int) -> UInt8 {
+        UInt8(truncatingIfNeeded: value)
+    }
+
+    func indexedColor(_ value: Int) -> Color {
+        let index = Int(UInt8(truncatingIfNeeded: value))
+        switch index {
+        case 0...7:
+            return .indexed(BasicPalette(rawValue: index)!)
+        case 8...15:
+            return .indexedBright(BasicPalette(rawValue: index - 8)!)
+        default:
+            return .indexed256(index)
+        }
+    }
+
+    let color: Color
+    switch parameter(1) {
+    case 0:
+        color = .implementationDefined
+
+    case 1:
+        color = .transparent
+
+    case 2:
+        guard params.count >= 5, let values = colorParameters(), values.0 != -1, values.1 != -1, values.2 != -1
+        else { return nil }
+        color = .rgb(RGBColor8(rawR: component(values.0), g: component(values.1), b: component(values.2)))
+
+    case 5:
+        guard params.count >= 3 else { return nil }
+        switch true {
+        case selector.hasMore && colorType.hasMore && !params[2].hasMore:
+            break
+        case !selector.hasMore && !colorType.hasMore && !params[2].hasMore:
+            break
+        default:
+            return nil
+        }
+        consumedCount = 3
+        color = indexedColor(parameter(2))
+
+    case 6:
+        guard params.count >= 6, let values = colorParameters(),
+            values.0 != -1, values.1 != -1, values.2 != -1, values.3 != -1
+        else { return nil }
+        color = .rgba(
+            RGBAColor8(
+                rawR: component(values.0),
+                g: component(values.1),
+                b: component(values.2),
+                a: component(values.3),
+            )
+        )
+
+    default:
+        return nil
+    }
+
+    parameters = parameters.dropFirst(consumedCount)
+    return color
+}
+
 /// `HSLColor` represents color as hue ([0...359]), saturation ([0...1]) and luminance ([0...1]).
 public struct HSLColor: Hashable, Sendable {
     public var hue: Double
